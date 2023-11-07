@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='timepulse',
     version='0.0.1',
-    description='A set of tools to help with timeseries',
+    description='A set of tools to help with timeseries flow',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     author='SQUAREDEV BV',

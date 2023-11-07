@@ -1,6 +1,6 @@
 # Timepulse
 
-Welcome to Timepulse, the one-stop solution for [Brief Description of Library Functionality].
+Welcome to Timepulse, the one-stop solution for timeseries processing and modeling.
 
 ## Table of Contents
 
@@ -16,7 +16,7 @@ Welcome to Timepulse, the one-stop solution for [Brief Description of Library Fu
 To install Timepulse, simply use pip:
 
 ```bash
-pip install my-library
+pip install timepulse
 ```
 
 ## Usage
