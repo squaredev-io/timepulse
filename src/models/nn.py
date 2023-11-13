@@ -3,8 +3,7 @@ from datetime import datetime
 from src.utils import create_model_checkpoint
 
 class MultivariateDenseModel:
-    def __init__(self, input_shape, horizon, n_neurons0=128, n_neurons1=64, dropout_rate=0.2):
-        self.input_shape = input_shape
+    def __init__(self, horizon, n_neurons0=128, n_neurons1=64, dropout_rate=0.2):
         self.horizon = horizon
         self.model_name = f"dense_model_{int(datetime.now().timestamp())}"
         self.model = None
@@ -15,7 +14,7 @@ class MultivariateDenseModel:
 
     def build(self):
         layers = [
-            tf.keras.layers.Dense(self.n_neurons0, activation="relu", input_shape=self.input_shape)
+            tf.keras.layers.Dense(self.n_neurons0, activation="relu")
         ]
 
         if self.n_neurons1 is not None:
@@ -44,5 +43,3 @@ class MultivariateDenseModel:
         self.build()
         self.compile(loss, learning_rate)
         self.fit(X_train_scaled, y_train_scaled, X_val_scaled, y_val_scaled, epochs=100, batch_size=128, verbose=0)
-
-
