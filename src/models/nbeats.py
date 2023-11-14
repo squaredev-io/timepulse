@@ -54,12 +54,6 @@ class NBeats(tf.keras.Model):
     n_stacks : int, optional, default: 30
         The number of stacked NBeatsBlocks in the model.
 
-    n_epochs : int, optional, default: 5000
-        The number of training epochs.
-
-    batch_size : int, optional, default: 1024
-        Batch size for training.
-
     Attributes
     ----------
     model : tf.keras.Model
@@ -73,24 +67,23 @@ class NBeats(tf.keras.Model):
     build()
         Build the NBeats model.
 
-    compile()
-        Compile the NBeats model with Mean Absolute Error (MAE) loss and Adam optimizer.
+    compile(loss="mae", learning_rate=0.001, metrics=["mae", "mse"])
+        Compile the NBeats model with specified loss function, learning rate, and metrics.
 
-    fit(train_dataset, test_dataset)
+    fit(X_train, y_train, X_val, y_val, n_epochs=5000, batch_size=1024, verbose=0)
         Train the NBeats model with EarlyStopping and ReduceLROnPlateau callbacks.
-
-    compile_and_fit(X_train, y_train, X_val, y_val)
-        Build, compile, and fit the NBeats model.
 
     Examples
     --------
-    >>> nbeats_model = NBeats(window_size=10, horizon=3)
-    >>> nbeats_model.compile_and_fit(X_train, y_train, X_test, y_test)
-    >>> predictions = nbeats_model.model.predict(test_data)
+    >>> nbeats_instance = NBeats(window_size=10, horizon=3)
+    >>> nbeats_instance.build()
+    >>> nbeats_instance.compile()
+    >>> nbeats_instance.fit(X_train, y_train, X_val, y_val)
+    >>> predictions = nbeats_instance.model.predict(test_data)
     >>> mse = nbeats_model.model.evaluate(test_data)
     """
         
-    def __init__(self, window_size, horizon=1, n_neurons=512, n_layers=4, n_stacks=30, n_epochs=5000, batch_size=1024, **kwargs):
+    def __init__(self, window_size, horizon=1, n_neurons=512, n_layers=4, n_stacks=30, **kwargs):
         super().__init__(**kwargs)
         self.input_size = window_size * horizon
         self.theta_size = window_size * horizon + horizon
@@ -99,11 +92,7 @@ class NBeats(tf.keras.Model):
         self.n_neurons = n_neurons
         self.n_layers = n_layers
         self.n_stacks = n_stacks
-        self.n_epochs = n_epochs
-        self.batch_size = batch_size # taken from Appendix D in N-BEATS paper
-        self.model_name = f"nbeats_model_{int(datetime.now().timestamp())}"
         self.model = None
-
 
         # Create the initial NBeatsBlock layer
         self.initial_block = NBeatsBlock(
@@ -114,25 +103,6 @@ class NBeats(tf.keras.Model):
             n_layers=n_layers,
             name="InitialBlock"
         )
-
-
-    def prepare_data(self, X_train, y_train, X_val, y_val):
-        # Turn train and validation arrays into tensor Datasets
-        train_features_dataset = tf.data.Dataset.from_tensor_slices(X_train)
-        train_labels_dataset = tf.data.Dataset.from_tensor_slices(y_train)
-
-        validation_features_dataset = tf.data.Dataset.from_tensor_slices(X_val)
-        validation_labels_dataset = tf.data.Dataset.from_tensor_slices(y_val)
-
-        # Combine features & labels
-        train_dataset = tf.data.Dataset.zip((train_features_dataset, train_labels_dataset))
-        validation_dataset = tf.data.Dataset.zip((validation_features_dataset, validation_labels_dataset))
-
-        # Batch and prefetch for optimal performance
-        train_dataset = train_dataset.batch(self.batch_size).prefetch(tf.data.AUTOTUNE)
-        validation_dataset = validation_dataset.batch(self.batch_size).prefetch(tf.data.AUTOTUNE)
-
-        return train_dataset, validation_dataset
 
 
     def build(self):
@@ -152,7 +122,7 @@ class NBeats(tf.keras.Model):
             residuals = tf.keras.layers.subtract([residuals, backcast], name=f"subtract_{i}")
             forecast = tf.keras.layers.add([forecast, block_forecast], name=f"add_{i}")
             
-        self.model = tf.keras.Model(inputs=stack_input, outputs=forecast, name=self.model_name)
+        self.model = tf.keras.Model(inputs=stack_input, outputs=forecast, name=f"nbeats_model_{int(datetime.now().timestamp())}")
 
 
     def compile(self, loss="mae", learning_rate=0.001, metrics=["mae", "mse"]):
@@ -163,22 +133,32 @@ class NBeats(tf.keras.Model):
         )
 
 
-    def fit(self, train_dataset, validation_dataset):
+    def fit(self, X_train, y_train, X_val, y_val, n_epochs=5000, batch_size=1024, verbose=0):
+        # Turn train and validation arrays into tensor Datasets
+        train_features_dataset = tf.data.Dataset.from_tensor_slices(X_train)
+        train_labels_dataset = tf.data.Dataset.from_tensor_slices(y_train)
+
+        validation_features_dataset = tf.data.Dataset.from_tensor_slices(X_val)
+        validation_labels_dataset = tf.data.Dataset.from_tensor_slices(y_val)
+
+        # Combine features & labels
+        train_dataset = tf.data.Dataset.zip((train_features_dataset, train_labels_dataset))
+        validation_dataset = tf.data.Dataset.zip((validation_features_dataset, validation_labels_dataset))
+
+        # Batch and prefetch for optimal performance
+        train_dataset = train_dataset.batch(batch_size).prefetch(tf.data.AUTOTUNE)
+        validation_dataset = validation_dataset.batch(batch_size).prefetch(tf.data.AUTOTUNE)
+
         self.model.fit(
             train_dataset,
-            epochs=self.n_epochs,
+            epochs=n_epochs,
             validation_data=validation_dataset,
-            verbose=0,
+            verbose=verbose,
+            batch_size=batch_size, # taken from Appendix D in N-BEATS paper
             callbacks=[
                 tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=200, restore_best_weights=True),
                 tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss", patience=100, verbose=1)
             ]
         )
 
-
-    def compile_and_fit(self, X_train, y_train, X_val, y_val, loss="mae", learning_rate=0.001, metrics=["mae", "mse"]):
-        self.build()
-        self.compile(loss=loss, learning_rate=learning_rate, metrics=metrics)
-        train_dataset, validation_dataset = self.prepare_data(X_train, y_train, X_val, y_val)
-        self.fit(train_dataset=train_dataset, validation_dataset=validation_dataset)
 
