@@ -1,5 +1,6 @@
 import tensorflow as tf
 from datetime import datetime
+from src.utils import create_model_checkpoint
 
 # Create NBeatsBlock custom layer 
 class NBeatsBlock(tf.keras.layers.Layer):
@@ -122,7 +123,7 @@ class NBeats(tf.keras.Model):
             residuals = tf.keras.layers.subtract([residuals, backcast], name=f"subtract_{i}")
             forecast = tf.keras.layers.add([forecast, block_forecast], name=f"add_{i}")
             
-        self.model = tf.keras.Model(inputs=stack_input, outputs=forecast, name=f"nbeats_model_{int(datetime.now().timestamp())}")
+        self.model = tf.keras.Model(inputs=stack_input, outputs=forecast, name=f"nbeats_model_{datetime.now().strftime('D%Y-%m-%dT%H.%M')}")
 
 
     def compile(self, loss="mae", learning_rate=0.001, metrics=["mae", "mse"]):
@@ -134,31 +135,19 @@ class NBeats(tf.keras.Model):
 
 
     def fit(self, X_train, y_train, X_val, y_val, n_epochs=5000, batch_size=1024, verbose=0):
-        # Turn train and validation arrays into tensor Datasets
-        train_features_dataset = tf.data.Dataset.from_tensor_slices(X_train)
-        train_labels_dataset = tf.data.Dataset.from_tensor_slices(y_train)
-
-        validation_features_dataset = tf.data.Dataset.from_tensor_slices(X_val)
-        validation_labels_dataset = tf.data.Dataset.from_tensor_slices(y_val)
-
-        # Combine features & labels
-        train_dataset = tf.data.Dataset.zip((train_features_dataset, train_labels_dataset))
-        validation_dataset = tf.data.Dataset.zip((validation_features_dataset, validation_labels_dataset))
-
-        # Batch and prefetch for optimal performance
-        train_dataset = train_dataset.batch(batch_size).prefetch(tf.data.AUTOTUNE)
-        validation_dataset = validation_dataset.batch(batch_size).prefetch(tf.data.AUTOTUNE)
-
         self.model.fit(
-            train_dataset,
+            X_train, y_train,
             epochs=n_epochs,
-            validation_data=validation_dataset,
+            validation_data=(X_val, y_val),
             verbose=verbose,
-            batch_size=batch_size, # taken from Appendix D in N-BEATS paper
+            batch_size=batch_size, 
             callbacks=[
                 tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=200, restore_best_weights=True),
-                tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss", patience=100, verbose=1)
+                tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss", patience=100, verbose=1),
+                create_model_checkpoint(model_name=self.model.name)
             ]
         )
 
-
+    def predict(self, X_test):
+        y_pred = self.model.predict(X_test)
+        return y_pred.flatten()
