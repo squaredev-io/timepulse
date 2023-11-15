@@ -2,15 +2,17 @@ from src.utils import make_windows, make_train_test_splits, create_model_checkpo
 import tensorflow as tf
 from datetime import datetime
 
+
 class LSTM():
     def __init__(self, horizon, window_size):
         self.horizon = horizon
         self.window_size = window_size
-        tf.random.set_seed(42)
+        self.model = None
 
-    def prepare_data(self, timesteps, values):
-        full_windows, full_labels = make_windows(values, window_size=self.window_size, horizon=self.horizon)
-        self.train_windows, self.test_windows, self.train_labels, self.test_labels = make_train_test_splits(windows=full_windows, labels=full_labels, test_split=0.1)
+
+    def prepare_data(self):
+        """No preparation is needed for this model. Data are supposed to be handled by the user and be passed into 'fit' method."""
+        pass
         
 
     def build(self):
@@ -19,19 +21,28 @@ class LSTM():
         x = tf.keras.layers.Lambda(lambda x: tf.expand_dims(x, axis=1))(inputs) # expand input dimension to be compatible with LSTM
         x = tf.keras.layers.LSTM(128, activation="relu")(x) # using the tanh loss function results in a massive error
         output = tf.keras.layers.Dense(self.horizon)(x)
-        self.model = tf.keras.Model(inputs=inputs, outputs=output, name=f"lstm_model_{datetime.now().isoformat()}")
+        self.model = tf.keras.Model(inputs=inputs, outputs=output, name=f"lstm_model_{datetime.now().strftime('D%Y-%m-%dT%H.%M')}")
 
+
+    def compile(self, loss="mae", learning_rate=0.001):
         # Compile model
-        self.model.compile(loss="mae", optimizer=tf.keras.optimizers.Adam())
+        self.model.compile(loss=loss, optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate))
 
-        return self.model.summary()
 
-    def fit(self):
+    def fit(self, X_train, y_train, X_val, y_val, epochs=100, batch_size=None, verbose=0):
         # Seems when saving the model several warnings are appearing: https://github.com/tensorflow/tensorflow/issues/47554 
-        self.model.fit(self.train_windows,
-                    self.train_labels,
-                    epochs=100,
-                    verbose=0,
-                    batch_size=None,
-                    validation_data=(self.test_windows, self.test_labels),
-                    callbacks=[create_model_checkpoint(model_name=self.model.name)])
+        self.model.fit(X_train,
+                    y_train,
+                    epochs=epochs,
+                    verbose=verbose,
+                    batch_size=batch_size,
+                    validation_data=(X_val, y_val),
+                    callbacks=[create_model_checkpoint(model_name=self.model.name)])    
+
+
+    def predict(self, values):
+        return self.model.predict(values)
+    
+
+    def report(self):
+        self.model.summary()
