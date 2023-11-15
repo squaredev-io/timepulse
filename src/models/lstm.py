@@ -8,11 +8,6 @@ class LSTM():
         self.horizon = horizon
         self.window_size = window_size
         self.model = None
-
-
-    def prepare_data(self):
-        """No preparation is needed for this model. Data are supposed to be handled by the user and be passed into 'fit' method."""
-        pass
         
 
     def build(self):
