@@ -62,9 +62,6 @@ class NBeats(tf.keras.Model):
 
     Methods
     -------
-    prepare_data(X_train, y_train, X_val, y_val)
-        Prepare data for training and validation.
-
     build()
         Build the NBeats model.
 
@@ -74,13 +71,16 @@ class NBeats(tf.keras.Model):
     fit(X_train, y_train, X_val, y_val, n_epochs=5000, batch_size=1024, verbose=0)
         Train the NBeats model with EarlyStopping and ReduceLROnPlateau callbacks.
 
+    predict(X_test)
+        Generate predictions using the trained NBeats model.
+
     Examples
     --------
     >>> nbeats_instance = NBeats(window_size=10, horizon=3)
     >>> nbeats_instance.build()
     >>> nbeats_instance.compile()
     >>> nbeats_instance.fit(X_train, y_train, X_val, y_val)
-    >>> predictions = nbeats_instance.model.predict(test_data)
+    >>> predictions = nbeats_instance.predict(test_data)
     >>> mse = nbeats_model.model.evaluate(test_data)
     """
         
