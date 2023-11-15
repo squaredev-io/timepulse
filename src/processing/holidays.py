@@ -2,13 +2,31 @@ import holidays
 import pandas as pd
 
 
-def create_holidays(df, country='ES'):
-    years = sorted(df['year'].unique())
+def fetch_holidays(years, country_code):
+    """
+    Fetches and preprocesses monthly holiday data for the specified country.
 
-    country_holidays = holidays.country_holidays(country=country, years=years)
+    Parameters
+    ----------
+    years : list
+        List of years for which holiday data is fetched.
+
+    country_code : str
+        Country code used to retrieve holidays.
+
+    Returns
+    -------
+    pd.DataFrame
+        Monthly holiday data with the total count of holidays for each month.
+
+    Example
+    -------
+    years=[2020, 2021, 2022]
+    monthly_holidays_df = fetch_holidays(years=years, country_code='ES')
+    """
+    country_holidays = holidays.CountryHoliday(country_code, observed=True, years=years)
     dates = []
     names = []
-    
     for date, name in sorted(country_holidays.items()):
         dates.append(date)
         names.append(name)

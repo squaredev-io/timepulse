@@ -1,18 +1,25 @@
 import pandas as pd
-import os
 
 
-def fetch_weather(path, csv_file):
-    # Define the file path and CSV filename
-    weather_history_csv_file = path + csv_file
+def fetch_weather(filename):
+    """
+    DEPRECATED: Use weather_data_retriever package instead.
 
-    if not os.path.exists(weather_history_csv_file):
-        from fetch_weather_data import main
-        main(parquet_file=weather_history_csv_file, csv_filename=weather_history_csv_file)
+    Fetches and preprocesses monthly weather data from a CSV file.
 
-    monthly_weather_history_df = pd.read_csv(weather_history_csv_file)
+    Parameters
+    ----------
+    filename : str
+        Path to the CSV file containing monthly weather data.
+
+    Returns
+    -------
+    pd.DataFrame
+        Monthly weather data with the 'avg_temperatures' column converted to Celsius.
+    """
+    monthly_weather_history_df = pd.read_csv(filename)
     monthly_weather_history_df['avg_temperatures'] = ((monthly_weather_history_df['avg_temperatures'] - 32) * 5/9).round(0)
     monthly_weather_history_df['avg_temperatures'] = monthly_weather_history_df['avg_temperatures'].astype(int)
     monthly_weather_history_df['Date'] = pd.to_datetime(monthly_weather_history_df['Date'])
     monthly_weather_history_df = monthly_weather_history_df.set_index('Date')
-    monthly_weather_history_df.head()
+    return monthly_weather_history_df
