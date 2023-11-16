@@ -4,7 +4,7 @@ import tensorflow as tf
 from src.data.data_collection import fetch_holidays, fetch_stringency_index, fetch_weather
 from src.utils.splits import create_multivar_dataframe, create_windowed_dataframe, stratified_split_data
 from src.metrics.regression_metrics import evaluate_preds
-from .mock_data import create_aco_mock_data
+from src.tests.v1.mock_data import create_aco_mock_data
 
 
 def preprocess_aco_data(df):

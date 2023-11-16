@@ -60,7 +60,7 @@ def evaluate_preds(y_true, y_pred):
     # Calculate various metrics
     mae = calculate_mae(y_true, y_pred)
     mse = calculate_mse(y_true, y_pred)
-    rmse = calculate_rmse(mse)
+    rmse = calculate_rmse(y_true, y_pred)
     mape = calculate_mape(y_true, y_pred)
     mase = calculate_mase(y_true, y_pred)
     r2 = calculate_r2(y_true, y_pred)
@@ -103,7 +103,7 @@ def evaluate_preds_for_large_horizon(y_true, y_pred):
     # Calculate various metrics
     mae = calculate_mae(y_true, y_pred)
     mse = calculate_mse(y_true, y_pred)
-    rmse = calculate_rmse(mse)
+    rmse = calculate_rmse(y_true, y_pred)
     mape = calculate_mape(y_true, y_pred)
     mase = calculate_mase(y_true, y_pred)
     r2 = calculate_r2(y_true, y_pred)

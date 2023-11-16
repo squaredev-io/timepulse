@@ -5,6 +5,7 @@ import logging
 logging.getLogger('tensorflow').disabled = True
 logging.getLogger("h5py").setLevel(logging.INFO)
 
+
 def get_order_number(task):
     return v1_test_order_map.index(task)
 

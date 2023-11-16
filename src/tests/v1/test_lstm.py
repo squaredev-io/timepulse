@@ -1,8 +1,7 @@
 import pytest
 from src.tests.v1.conftest import get_order_number
-from src.tests.v1.conftest import dataholder
 from src.models.lstm import LSTM
-
+from src.tests.utils.maps import v1_test_order_map
 
 @pytest.mark.order(get_order_number("test_lstm"))
 def test_lstm():
