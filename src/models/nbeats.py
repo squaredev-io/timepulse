@@ -1,6 +1,6 @@
 import tensorflow as tf
 from datetime import datetime
-from src.utils import create_model_checkpoint
+from src.utils.models import create_model_checkpoint
 
 # Create NBeatsBlock custom layer 
 class NBeatsBlock(tf.keras.layers.Layer):
@@ -93,6 +93,7 @@ class NBeats(tf.keras.Model):
         self.n_neurons = n_neurons
         self.n_layers = n_layers
         self.n_stacks = n_stacks
+        self.model_name = f"nbeats_model_{datetime.now().strftime('D%Y-%m-%dT%H.%M')}"
         self.model = None
 
         # Create the initial NBeatsBlock layer
@@ -110,7 +111,6 @@ class NBeats(tf.keras.Model):
         stack_input = tf.keras.layers.Input(shape=(self.input_size), name="stack_input")
         backcast, forecast = self.initial_block(stack_input)
         residuals = tf.keras.layers.subtract([stack_input, backcast], name="subtract_00")
-
         for i in range(self.n_stacks - 1):
             backcast, block_forecast = NBeatsBlock(
                 input_size=self.input_size,
@@ -122,14 +122,13 @@ class NBeats(tf.keras.Model):
             )(residuals)
             residuals = tf.keras.layers.subtract([residuals, backcast], name=f"subtract_{i}")
             forecast = tf.keras.layers.add([forecast, block_forecast], name=f"add_{i}")
-            
-        self.model = tf.keras.Model(inputs=stack_input, outputs=forecast, name=f"nbeats_model_{datetime.now().strftime('D%Y-%m-%dT%H.%M')}")
+        self.model = tf.keras.Model(inputs=stack_input, outputs=forecast, name=self.model_name)
 
 
     def compile(self, loss="mae", learning_rate=0.001, metrics=["mae", "mse"]):
         self.model.compile(
             loss=loss,
-            optimizer=tf.keras.optimizers.Adam(learning_rate),
+            optimizer=tf.keras.optimizers.legacy.Adam(learning_rate),
             metrics=metrics
         )
 
@@ -144,7 +143,7 @@ class NBeats(tf.keras.Model):
             callbacks=[
                 tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=200, restore_best_weights=True),
                 tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss", patience=100, verbose=1),
-                create_model_checkpoint(model_name=self.model.name)
+                create_model_checkpoint(model_name=self.model_name)
             ]
         )
 
