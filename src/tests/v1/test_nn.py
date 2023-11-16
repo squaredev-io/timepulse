@@ -1,11 +1,16 @@
 import pandas as pd
+import pytest
 from src.models.nn import MultivariateDenseModel
 from src.models.nbeats import NBeats
 from src.models.xgboost import XGBRegressorModel
 from src.processing.min_max_scaler import MinMaxScalerWrapper
+from src.tests.v1.conftest import get_order_number
+from src.tests.v1.conftest import dataholder
 from .test_utils import load_and_preprocess_data_pipeline, run_model
 
-if __name__ == '__main__':
+
+@pytest.mark.order(get_order_number("test_nn"))
+def test_nn():
     X_train, y_train, X_test, y_test = load_and_preprocess_data_pipeline(
         data_path='/Users/nikosavgeros/Desktop/Projects/Sunrise Archive/data/ACO',
         location_name='Spain',
