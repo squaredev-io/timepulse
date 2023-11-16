@@ -1,7 +1,5 @@
 import pandas as pd
-from src.processing.holidays import fetch_holidays
-from src.processing.covid import fetch_stringency_index
-from src.processing.weather import fetch_weather
+from src.data.data_collection import fetch_holidays,fetch_stringency_index, fetch_weather
 from src.processing.min_max_scaler import MinMaxScalerWrapper
 from src.utils.splits import create_multivar_dataframe, create_windowed_dataframe, stratified_split_data
 from src.metrics.evaluate_preds import evaluate_preds
@@ -29,25 +27,28 @@ def load_and_preprocess_aco_data(parquet_file):
     df['Date'] = df['Date'].dt.strftime('%Y-%m-%d')
     df.set_index('Date', inplace=True)
     df.index = pd.to_datetime(df.index)
-    
     return df
 
 
-def load_and_preprocess_data_pipeline(data_path, country_code, place_filter, window_size, target_column, splitter_column):
+def load_and_preprocess_data_pipeline(data_path, location_name, country_code, place_filter, window_size, target_column, splitter_column):
     df = load_and_preprocess_aco_data(f'{data_path}/water_network_inflow.parquet')
-    holidays_df = fetch_holidays(years=df.year.unique(), country_code=country_code)
+    df = df[df['place']==place_filter]
+    df = df[['value']]
+    start_date = df.index.min().strftime('%Y-%m-%d')
+    end_date = df.index.max().strftime('%Y-%m-%d')
+    years = df.index.year.unique()
+    holidays_df = fetch_holidays(years=years, country_code=country_code)
     stringency_index_df = fetch_stringency_index(country_code)
-    weather_history_df = fetch_weather(f'{data_path}/costa_del_sol_weather_history.csv')
+    weather_history_df = fetch_weather(location_name=location_name, start_date=start_date, end_date=end_date)
 
     multivar_df = create_multivar_dataframe(df, stringency_index_df, holidays_df, weather_history_df)
-    multivar_df = create_windowed_dataframe(base_df=multivar_df[multivar_df['place']==place_filter][['value','stringency_category','total_holidays','avg_temperatures']],
+    multivar_df = create_windowed_dataframe(base_df=multivar_df,
                                             target_column=target_column,
                                             window_size=window_size)
 
     X_train, y_train, X_test, y_test = stratified_split_data(data=multivar_df, target_column=target_column, splitter_column=splitter_column)
 
     return X_train, y_train, X_test, y_test
-
 
 
 def run_model(model_instance, X_train, y_train, X_test, y_test, threshold=0.75, verbose=0):

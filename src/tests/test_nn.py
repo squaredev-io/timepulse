@@ -8,6 +8,7 @@ from .test_utils import load_and_preprocess_data_pipeline, run_model
 if __name__ == '__main__':
     X_train, y_train, X_test, y_test = load_and_preprocess_data_pipeline(
         data_path='/Users/nikosavgeros/Desktop/Projects/Sunrise Archive/data/ACO',
+        location_name='Spain',
         country_code='ES', 
         place_filter='etap', 
         window_size=3,
