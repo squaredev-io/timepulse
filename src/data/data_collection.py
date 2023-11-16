@@ -51,14 +51,14 @@ def fetch_stringency_index(country):
     # Create the 'stringency_category' column
     spain_strigency_index_df['stringency_category'] = pd.cut(spain_strigency_index_df['stringency_index'], bins=bin_edges, labels=bin_labels)
 
-    # Display the DataFrame with the new 'stringency_category' column
-    spain_strigency_index_df['stringency_category'].value_counts()
-
     # Resample to monthly and calculate mean for 'stringency_index' and mode for 'stringency_category'
     monthly_strigency_index_df = spain_strigency_index_df.resample('M').agg({
         'stringency_index': 'mean',
         'stringency_category': lambda x: x.mode().iloc[0]
     })
+
+    # Drop 'stringency_index' column
+    monthly_strigency_index_df.drop('stringency_index', axis=1, inplace=True)
 
     return monthly_strigency_index_df
 
