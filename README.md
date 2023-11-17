@@ -21,7 +21,6 @@ pip install timepulse
 
 ## Usage
 
-
 ## License
 
 [SQD](https://www.squaredev.io/)

@@ -1,6 +1,7 @@
-from src.utils import make_windows, make_train_test_splits, create_model_checkpoint
+from src.utils.models import create_model_checkpoint
 import tensorflow as tf
 from datetime import datetime
+import os
 
 
 class LSTM():
@@ -21,7 +22,7 @@ class LSTM():
 
     def compile(self, loss="mae", learning_rate=0.001):
         # Compile model
-        self.model.compile(loss=loss, optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate))
+        self.model.compile(loss=loss, optimizer=tf.keras.optimizers.legacy.Adam(learning_rate=learning_rate))
 
 
     def fit(self, X_train, y_train, X_val, y_val, epochs=100, batch_size=None, verbose=0):

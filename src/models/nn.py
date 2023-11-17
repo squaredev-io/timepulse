@@ -1,6 +1,6 @@
 import tensorflow as tf
 from datetime import datetime
-from src.utils import create_model_checkpoint
+from src.utils.models import create_model_checkpoint
 from src.processing.min_max_scaler import MinMaxScalerWrapper
 
 class MultivariateDenseModel:
@@ -11,24 +11,20 @@ class MultivariateDenseModel:
         self.dropout_rate = dropout_rate
         self.scaler_X = scaler_class
         self.scaler_y = scaler_class
+        self.model_name = f"dense_model_{datetime.now().strftime('D%Y-%m-%dT%H.%M')}"
         self.model = None
 
     def build(self):
-        layers = [
-            tf.keras.layers.Dense(self.n_neurons0, activation="relu")
-        ]
-
+        layers = [tf.keras.layers.Dense(self.n_neurons0, activation="relu")]
         if self.n_neurons1 is not None:
             layers.append(tf.keras.layers.Dropout(self.dropout_rate))
             layers.append(tf.keras.layers.Dense(self.n_neurons1, activation="relu"))
-
         layers.append(tf.keras.layers.Dense(self.horizon))
-
-        self.model = tf.keras.Sequential(layers, name=f"dense_model_{datetime.now().strftime('D%Y-%m-%dT%H.%M')}")
+        self.model = tf.keras.Sequential(layers, name=self.model_name)
 
 
     def compile(self, loss="mae", learning_rate=0.001):
-        self.model.compile(loss=loss, optimizer=tf.keras.optimizers.Adam(learning_rate))
+        self.model.compile(loss=loss, optimizer=tf.keras.optimizers.legacy.Adam(learning_rate))
 
 
     def fit(self, X_train, y_train, X_val, y_val, epochs=100, batch_size=128, verbose=0):
@@ -37,14 +33,13 @@ class MultivariateDenseModel:
             y_train = self.scaler_y.fit_transform_y(y_train.reshape(len(y_train), 1)).flatten()
             X_val = self.scaler_X.transform_X(X_val)
             y_val = self.scaler_y.transform_y(y_val.reshape(len(y_val), 1)).flatten()
-
         self.model.fit(X_train, 
                        y_train,
                         epochs=epochs,
                         batch_size=batch_size,
                         verbose=verbose,
                         validation_data=(X_val, y_val),
-                        callbacks=[create_model_checkpoint(model_name=self.model.name)])
+                        callbacks=[create_model_checkpoint(model_name=self.model_name)])
 
 
     def predict(self, X_test):
