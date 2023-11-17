@@ -79,7 +79,7 @@ def run_model(model_instance, X_train, y_train, X_test, y_test, threshold=0.75, 
     model_instance.build()
     if hasattr(model_instance, 'compile'):
         model_instance.compile()
-    model_instance.fit(X_train, y_train, X_test, y_test)
+    model_instance.fit(X_train, y_train, X_test, y_test, verbose=verbose)
     y_pred = model_instance.predict(X_test)
 
     result_metrics = evaluate_preds(y_pred=y_pred, y_true=y_test)

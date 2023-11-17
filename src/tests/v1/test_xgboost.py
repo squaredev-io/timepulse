@@ -21,7 +21,7 @@ def test_xgboost():
     assert X_train.shape[0] == y_train.shape[0], "Number of training samples in X_train and y_train do not match"
     assert X_test.shape[0] == y_test.shape[0], "Number of testing samples in X_test and y_test do not match"
 
-    model_instance = XGBRegressorModel(scaler_class=MinMaxScalerWrapper(), n_estimators=100, max_depth=5, learning_rate=0.1)
+    model_instance = XGBRegressorModel(scaler_class=MinMaxScalerWrapper(), n_estimators=1000, max_depth=5, learning_rate=0.1, early_stopping_rounds=50)
     y_pred, result_metrics = run_model(model_instance, X_train, y_train, X_test, y_test, threshold=0.75, verbose=0)
 
     assert y_pred.shape == y_test.shape, "Shape mismatch between y_pred and y_test"

@@ -20,13 +20,13 @@ class XGBRegressorModel:
             self.model = XGBRegressor(**self.params)
 
 
-    def fit(self, X_train, y_train, X_val, y_val):
+    def fit(self, X_train, y_train, X_val, y_val, verbose=0):
         if self.scaler_X is not None:
             X_train = self.scaler_X.fit_transform_X(X_train)
             y_train = self.scaler_y.fit_transform_y(y_train.reshape(len(y_train), 1)).flatten()
             X_val = self.scaler_X.transform_X(X_val)
             y_val = self.scaler_y.transform_y(y_val.reshape(len(y_val), 1)).flatten()
-        self.model.fit(X_train, y_train)
+        self.model.fit(X_train, y_train, eval_set=[(X_train, y_train), (X_val, y_val)], verbose=verbose)
 
 
     def predict(self, X_test):

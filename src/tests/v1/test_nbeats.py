@@ -1,9 +1,6 @@
 import pandas as pd
 import pytest
-from src.models.nn import MultivariateDenseModel
 from src.models.nbeats import NBeats
-from src.models.xgboost import XGBRegressorModel
-from src.processing.min_max_scaler import MinMaxScalerWrapper
 from src.tests.v1.conftest import get_order_number
 from src.tests.v1.test_utils import load_and_preprocess_data_pipeline, run_model
 
