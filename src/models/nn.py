@@ -11,7 +11,7 @@ class MultivariateDenseModel:
         self.dropout_rate = dropout_rate
         self.scaler_X = scaler_class
         self.scaler_y = scaler_class
-        self.model_name = f"dense_model_{datetime.now().strftime('D%Y-%m-%dT%H.%M')}"
+        self.model_name = f"dense_model"
         self.model = None
 
     def build(self):
@@ -22,10 +22,8 @@ class MultivariateDenseModel:
         layers.append(tf.keras.layers.Dense(self.horizon))
         self.model = tf.keras.Sequential(layers, name=self.model_name)
 
-
     def compile(self, loss="mae", learning_rate=0.001):
         self.model.compile(loss=loss, optimizer=tf.keras.optimizers.legacy.Adam(learning_rate))
-
 
     def fit(self, X_train, y_train, X_val, y_val, epochs=100, batch_size=128, verbose=0):
         if self.scaler_X is not None:
@@ -40,7 +38,6 @@ class MultivariateDenseModel:
                         verbose=verbose,
                         validation_data=(X_val, y_val),
                         callbacks=[create_model_checkpoint(model_name=self.model_name)])
-
 
     def predict(self, X_test):
         if self.scaler_X is not None:

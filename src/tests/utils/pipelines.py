@@ -5,6 +5,7 @@ from src.data.data_collection import fetch_holidays, fetch_stringency_index, fet
 from src.utils.splits import create_multivar_dataframe, create_windowed_dataframe, stratified_split_data
 from src.metrics.regression_metrics import evaluate_preds
 from src.tests.v1.mock_data import create_aco_mock_data
+import os
 
 
 def preprocess_aco_data(df):
@@ -53,8 +54,10 @@ def load_and_preprocess_aco_data(parquet_file):
 
 
 def load_and_preprocess_data_pipeline(data_path, location_name, country_code, place_filter, window_size, target_column, splitter_column):
-    # df = load_and_preprocess_aco_data(f'{data_path}/water_network_inflow.parquet')
-    df = create_aco_mock_data(start_year=2016, end_year=2022)
+    if os.path.exists(data_path):
+        df = load_and_preprocess_aco_data(f'{data_path}/water_network_inflow.parquet')
+    else:
+        df = create_aco_mock_data(start_year=2016, end_year=2022)
     df = preprocess_aco_data(df)
     df = df[df['place']==place_filter]
     df = df[['value']]
@@ -86,7 +89,7 @@ def run_model(model_instance, X_train, y_train, X_test, y_test, threshold=0.75, 
 
     if verbose:
         print(f"\nTest results for {model_instance.model_name}:\n")
-        print(f"R-squared Score: {result_metrics['r2']:.4f}")
+        print(f"R-squared Score: {result_metrics['r2_score']:.4f}")
         print(f"Mean Absolute Error: {result_metrics['mae']:.4f}")
         print(f"Mean Squared Error: {result_metrics['mse']:.4f}")
         print(f"Root Mean Squared Error: {result_metrics['rmse']:.4f}")

@@ -93,7 +93,7 @@ class NBeats(tf.keras.Model):
         self.n_neurons = n_neurons
         self.n_layers = n_layers
         self.n_stacks = n_stacks
-        self.model_name = f"nbeats_model_{datetime.now().strftime('D%Y-%m-%dT%H.%M')}"
+        self.model_name = f"nbeats_model"
         self.model = None
 
         # Create the initial NBeatsBlock layer
