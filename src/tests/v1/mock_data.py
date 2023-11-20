@@ -192,25 +192,3 @@ mixed_interval_mock_data = pd.DataFrame(
         "value": [random.random() for _ in range(100)],
     }
 )
-
-
-def create_with_nonexistent_user_response(_id):
-    return {
-        "error": f'Key (user_id)=({_id}) is not present in table "users".',
-        "status_code": 400,
-    }
-
-
-def create_with_nonexistent_item_response(_id):
-    return {
-        "error": f'Key (item_id)=({_id}) is not present in table "items".',
-        "status_code": 400,
-    }
-
-
-def user_not_found_response(_id):
-    return {f"error": f"User with id: {_id} not found.", "status_code": 404}
-
-
-def item_not_found_response(_id):
-    return {f"error": f"Item with id: {_id} not found.", "status_code": 404}

@@ -9,16 +9,14 @@ class XGBRegressorModel:
         self.params = kwargs
         self.scaler_X = scaler_class
         self.scaler_y = scaler_class
-        self.model_name = f"xgboost_model_{datetime.now().strftime('D%Y-%m-%dT%H.%M')}"
+        self.model_name = f"xgboost_model"
         self.model = None
         
-
     def build(self):
-        if self.params is None:
+        if self.params:
             self.model = XGBRegressor()
         else:
             self.model = XGBRegressor(**self.params)
-
 
     def fit(self, X_train, y_train, X_val, y_val, verbose=0):
         if self.scaler_X is not None:
@@ -27,7 +25,6 @@ class XGBRegressorModel:
             X_val = self.scaler_X.transform_X(X_val)
             y_val = self.scaler_y.transform_y(y_val.reshape(len(y_val), 1)).flatten()
         self.model.fit(X_train, y_train, eval_set=[(X_train, y_train), (X_val, y_val)], verbose=verbose)
-
 
     def predict(self, X_test):
         if self.scaler_X is not None:
@@ -38,7 +35,6 @@ class XGBRegressorModel:
             y_pred = self.model.predict(X_test)
         return y_pred.flatten()
     
-
     def save(self, save_path='storage'):
         model_filename = f'{save_path}/{self.model_name}'
         if not os.path.exists(model_filename):

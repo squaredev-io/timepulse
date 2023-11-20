@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 from src.models.nbeats import NBeats
 from src.tests.v1.conftest import get_order_number
-from src.tests.v1.test_utils import load_and_preprocess_data_pipeline, run_model
+from src.tests.utils.pipelines import load_and_preprocess_data_pipeline, run_model
 
 
 @pytest.mark.order(get_order_number("test_nbeats"))
