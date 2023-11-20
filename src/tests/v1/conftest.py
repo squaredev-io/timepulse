@@ -1,11 +1,12 @@
 from pytest import fixture
 from src.tests.utils.maps import v1_test_order_map
-import logging
+import logging, os, shutil
 
-logging.getLogger('tensorflow').disabled = True
+logging.getLogger("tensorflow").disabled = True
 logging.getLogger("h5py").setLevel(logging.INFO)
 logging.getLogger("urllib3").setLevel(logging.INFO)
 logging.getLogger("geopy").setLevel(logging.INFO)
+
 
 def get_order_number(task):
     return v1_test_order_map.index(task)
@@ -25,6 +26,12 @@ fixture as a parameter in the test function
 #     # runs once before all tests
 #     db = "this is a database"
 #     yield db
+
+
+@fixture(scope="session", autouse=True)
+def setup_storage():
+    yield True
+    shutil.rmtree("storage")
 
 
 class DataHolder:
