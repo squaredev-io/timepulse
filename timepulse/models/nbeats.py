@@ -1,6 +1,6 @@
 import tensorflow as tf
 from datetime import datetime
-from src.utils.models import create_model_checkpoint
+from timepulse.utils.models import create_model_checkpoint
 
 # Create NBeatsBlock custom layer 
 class NBeatsBlock(tf.keras.layers.Layer):

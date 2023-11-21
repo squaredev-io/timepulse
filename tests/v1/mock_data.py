@@ -3,7 +3,6 @@ import numpy as np
 from itertools import product
 from datetime import datetime, timedelta
 import random
-# from src.utils.timestamps import get_timestamp, get_old_timestamp
 
 
 def create_aco_mock_data(start_year=2016, end_year=2022, places=['presa', 'etap', 'desaladora', 'rfuengirola', 'rguadalmansa', 'gibraltar', 'si4']):
@@ -44,13 +43,6 @@ def create_aco_mock_data(start_year=2016, end_year=2022, places=['presa', 'etap'
         values.append(round(value[0], 1))
     df['value'] = values
     return df
-
-# forecasts_mock_data = [
-#     {"date": get_timestamp(), "place": "gibraltar", "value": 37, "confidence": 0.9},
-#     {"date": get_timestamp(), "place": "rguadalmansa", "value": 3417, "confidence": 0.6},
-#     {"date": get_timestamp(), "place": "rguadalmansa", "value": 9867, "confidence": 0.7},
-#     {"date": get_timestamp(), "place": "si4", "value": 723, "confidence": 0.8},
-# ]
 
 
 format = "%Y-%m-%d %H:%M:%S"

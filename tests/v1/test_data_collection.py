@@ -1,6 +1,6 @@
 import pytest
-from src.tests.v1.conftest import get_order_number
-from src.data.data_collection import fetch_weather, fetch_stringency_index, fetch_holidays
+from tests.v1.conftest import get_order_number
+from timepulse.data.data_collection import fetch_weather, fetch_stringency_index, fetch_holidays
 
 
 @pytest.mark.order(get_order_number("test_data_collection"))

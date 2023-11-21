@@ -1,9 +1,10 @@
 import pandas as pd
 import pytest
-from src.models.nn import MultivariateDenseModel
-from src.processing.min_max_scaler import MinMaxScalerWrapper
-from src.tests.v1.conftest import get_order_number
-from src.tests.utils.pipelines import load_and_preprocess_data_pipeline, run_model
+from timepulse.models.nn import MultivariateDenseModel
+from timepulse.utils.models import run_model
+from timepulse.processing.min_max_scaler import MinMaxScalerWrapper
+from tests.v1.conftest import get_order_number
+from tests.utils.pipelines import load_and_preprocess_data_pipeline
 
 
 @pytest.mark.order(get_order_number("test_nn"))

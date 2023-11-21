@@ -1,5 +1,5 @@
 from pytest import fixture
-from src.tests.utils.maps import v1_test_order_map
+from tests.utils.maps import v1_test_order_map
 import logging, os, shutil
 
 logging.getLogger("tensorflow").disabled = True

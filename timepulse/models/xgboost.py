@@ -1,5 +1,5 @@
 from xgboost import XGBRegressor
-from src.processing.min_max_scaler import MinMaxScalerWrapper
+from timepulse.processing.min_max_scaler import MinMaxScalerWrapper
 from datetime import datetime
 import joblib
 import os

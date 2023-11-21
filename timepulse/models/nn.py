@@ -1,7 +1,7 @@
 import tensorflow as tf
 from datetime import datetime
-from src.utils.models import create_model_checkpoint
-from src.processing.min_max_scaler import MinMaxScalerWrapper
+from timepulse.utils.models import create_model_checkpoint
+from timepulse.processing.min_max_scaler import MinMaxScalerWrapper
 
 class MultivariateDenseModel:
     def __init__(self, horizon, n_neurons0=128, n_neurons1=64, dropout_rate=0.2, scaler_class=MinMaxScalerWrapper()):

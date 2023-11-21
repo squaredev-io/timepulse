@@ -1,11 +1,11 @@
 import pandas as pd
 import pytest
-from src.models.xgboost import XGBRegressorModel
-from src.processing.standard_scaler import StandardScalerWrapper
-from src.tests.v1.conftest import get_order_number
-from src.tests.utils.pipelines import load_and_preprocess_data_pipeline, run_model
-import unittest
-from unittest.mock import patch, call
+from timepulse.models.xgboost import XGBRegressorModel
+from timepulse.utils.models import run_model
+from timepulse.processing.standard_scaler import StandardScalerWrapper
+from tests.v1.conftest import get_order_number
+from tests.utils.pipelines import load_and_preprocess_data_pipeline
+from unittest.mock import patch
 
 
 @pytest.mark.order(get_order_number("test_xgboost"))
