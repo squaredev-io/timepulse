@@ -99,6 +99,7 @@ class NBeats(tf.keras.Model):
         self.n_layers = n_layers
         self.n_stacks = n_stacks
         self.epochs = epochs
+        self.batch_size = batch_size
         self.model_name = f"nbeats_model"
         self.model = None
 

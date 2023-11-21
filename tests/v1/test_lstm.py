@@ -13,10 +13,6 @@ def test_lstm():
     assert lstm.window_size == 12
     assert lstm.model == None
 
-    lstm.build()
-    lstm.compile()
-    assert str(type(lstm.model)) == "<class 'keras.src.engine.functional.Functional'>"
-
     X_train, y_train, X_test, y_test = multi_data_pipeline(
         location_name="Spain",
         country_code="ES",
@@ -26,8 +22,9 @@ def test_lstm():
         splitter_column="stringency_category",
     )
 
-    y_pred, result_metrics = run_model(lstm, X_train, y_train, X_test, y_test, threshold=0.75, verbose=0)
-
+    y_pred, result_metrics = run_model(lstm, X_train, y_train, X_test, y_test, threshold=0.75, verbose=1)
+    
+    assert str(type(lstm.model)) == "<class 'keras.src.engine.functional.Functional'>"
     assert y_pred.shape[0] == y_test.shape[0], "Shape mismatch between y_pred and y_test"
 
     expected_metrics = ["r2_score", "mae", "mse", "rmse", "mape", "mase"]

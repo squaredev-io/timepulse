@@ -11,6 +11,7 @@ class LSTM:
         self.epochs = epochs
         self.batch_size = batch_size
         self.model = None
+        self.model_name = "lstm_model"
 
     def build(self):
         # Let's build an LSTM model with the Functional API
@@ -21,7 +22,7 @@ class LSTM:
         x = tf.keras.layers.LSTM(128, activation="relu")(x)  # using the tanh loss function results in a massive error
         output = tf.keras.layers.Dense(self.horizon)(x)
         self.model = tf.keras.Model(
-            inputs=inputs, outputs=output, name=f"lstm_model_{datetime.now().strftime('D%Y-%m-%dT%H.%M')}"
+            inputs=inputs, outputs=output, name=self.model_name
         )
 
     def compile(self, loss="mae", learning_rate=0.001):
@@ -37,7 +38,7 @@ class LSTM:
             verbose=verbose,
             batch_size=self.batch_size,
             validation_data=(X_val, y_val),
-            callbacks=[create_model_checkpoint(model_name=self.model.name)],
+            callbacks=[create_model_checkpoint(model_name=self.model_name)],
         )
 
     def predict(self, values):

@@ -30,16 +30,6 @@ def run_model(model_instance, X_train, y_train, X_test, y_test, threshold=0.75, 
         model_instance.compile()
     model_instance.fit(X_train, y_train, X_test, y_test, verbose=verbose)
     y_pred = model_instance.predict(X_test)
-
     result_metrics = evaluate_preds(y_pred=y_pred, y_true=y_test)
-
-    if verbose:
-        print(f"\nTest results for {model_instance.model_name}:\n")
-        print(f"R-squared Score: {result_metrics['r2_score']:.4f}")
-        print(f"Mean Absolute Error: {result_metrics['mae']:.4f}")
-        print(f"Mean Squared Error: {result_metrics['mse']:.4f}")
-        print(f"Root Mean Squared Error: {result_metrics['rmse']:.4f}")
-        print(f"Mean Absolute Percentage Error: {result_metrics['mape']:.4f}")
-        print(f"Mean Absolute Scaled Error: {result_metrics['mase']:.4f}")
-        print("\n")
+    
     return y_pred, result_metrics
