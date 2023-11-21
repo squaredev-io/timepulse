@@ -6,9 +6,7 @@ import json
 from typing import Tuple, List, Dict, Union, Literal
 
 
-def get_location_from_name(
-    name: str, use_bound_box: bool = False
-) -> Tuple[str, Tuple[float, float]]:
+def get_location_from_name(name: str, use_bound_box: bool = False) -> Tuple[str, Tuple[float, float]]:
     nom_loc = Nominatim(user_agent="weather_data_retriever")
     try:
         location = nom_loc.geocode(name)
@@ -65,17 +63,13 @@ def convert_response_larc_power_dict_to_dataframe(
     if aggregation == "daily":
         weather_df["date"] = pd.to_datetime(weather_df["date"])
     elif aggregation == "hourly":
-        weather_df["date"] = weather_df.apply(
-            lambda x: convert_str_hour_date_to_datetime(x["date"]), axis=1
-        )
+        weather_df["date"] = weather_df.apply(lambda x: convert_str_hour_date_to_datetime(x["date"]), axis=1)
         weather_df["date"] = pd.to_datetime(weather_df["date"])
 
     return weather_df
 
 
-def adjust_coordinates_on_limitations(
-    longitude_max: Union[float, str], longitude_min: Union[float, str]
-) -> str:
+def adjust_coordinates_on_limitations(longitude_max: Union[float, str], longitude_min: Union[float, str]) -> str:
     """
     Check if a the max and min values have more than 10 points diff.
     If yes adjust it beacuse the weather API has limitations.
@@ -156,9 +150,7 @@ def get_larc_power_weather_data(
 
     # Basic modifications
     formatted_variables = ",".join(variables)
-    mod_start_date, mod_end_date = format_date_for_larc_power(
-        start_date, end_date, aggregation
-    )
+    mod_start_date, mod_end_date = format_date_for_larc_power(start_date, end_date, aggregation)
 
     if regional:
         base_url = r"https://power.larc.nasa.gov/api/temporal/{aggregation}/regional?parameters={parameters}&community={community}&latitude-min={latitude_min}&latitude-max={latitude_max}&longitude-min={longitude_min}&longitude-max={longitude_max}&start={start}&end={end}&format=JSON"
@@ -205,9 +197,7 @@ def get_larc_power_weather_data(
         return content
     else:
         selected_content_dict = content["properties"]["parameter"]
-        weather_df = convert_response_larc_power_dict_to_dataframe(
-            selected_content_dict, aggregation
-        )
+        weather_df = convert_response_larc_power_dict_to_dataframe(selected_content_dict, aggregation)
         return weather_df
 
 
@@ -220,7 +210,6 @@ def build_meteo_request_url(
     start_date: Union[str, None],
     end_date: Union[str, None],
 ) -> str:
-
     if case == "historical":
         base_forecast_url = r"https://archive-api.open-meteo.com/v1/archive?latitude={latitude}&longitude={longitude}&start_date={start_date}&end_date={end_date}&{aggregation}={parameters_str}&timeformat=unixtime&timezone=auto"
         api_forecast_request_url = base_forecast_url.format(
@@ -301,9 +290,7 @@ def get_open_meteo_weather_data(
     parameters: List[str] = ["default"],
     start_date: Union[str, None] = None,
     end_date: Union[str, None] = None,
-) -> Tuple[
-    pd.DataFrame, Dict[str, Union[str, float, Dict[str, Union[List[str], List[float]]]]]
-]:
+) -> Tuple[pd.DataFrame, Dict[str, Union[str, float, Dict[str, Union[List[str], List[float]]]]]]:
     """
     This function retrieves open-meteo historical or forecasted weather data at a location point
 
@@ -352,16 +339,12 @@ def get_open_meteo_weather_data(
     )
 
     try:
-        response = requests.get(
-            url=api_forecast_request_url, verify=True, timeout=30.00
-        )
+        response = requests.get(url=api_forecast_request_url, verify=True, timeout=30.00)
     except:
         raise ConnectionAbortedError("Failed to establish connection")
 
     content = json.loads(response.content.decode("utf-8"))
     weather_data_df = pd.DataFrame(content[aggregation])
-    weather_data_df["time"] = weather_data_df.apply(
-        lambda x: pd.to_datetime(x["time"], unit="s"), axis=1
-    )
+    weather_data_df["time"] = weather_data_df.apply(lambda x: pd.to_datetime(x["time"], unit="s"), axis=1)
 
     return weather_data_df, content
