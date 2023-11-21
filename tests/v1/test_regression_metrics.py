@@ -1,6 +1,6 @@
 import pytest
-from src.tests.v1.conftest import get_order_number
-from src.metrics.regression_metrics import evaluate_preds
+from tests.v1.conftest import get_order_number
+from timepulse.metrics.regression_metrics import evaluate_preds
 import numpy as np
 import tensorflow as tf
 

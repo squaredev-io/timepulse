@@ -1,6 +1,6 @@
 import pytest
-from src.tests.v1.conftest import get_order_number
-from src.utils.splits import get_labelled_windows, make_windows, make_train_test_splits, make_window_splits
+from tests.v1.conftest import get_order_number
+from timepulse.utils.splits import get_labelled_windows, make_windows, make_train_test_splits, make_window_splits
 import numpy as np
 
 

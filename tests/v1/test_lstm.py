@@ -1,12 +1,12 @@
 import pytest
-from src.tests.v1.conftest import get_order_number
-from src.models.lstm import LSTM
-from src.tests.utils.maps import v1_test_order_map
+from tests.v1.conftest import get_order_number
+from timepulse.models.lstm import LSTM
+
 
 @pytest.mark.order(get_order_number("test_lstm"))
 def test_lstm():
     lstm = LSTM(1, 12)
-    assert str(lstm.__class__) == "<class 'src.models.lstm.LSTM'>"
+    assert str(lstm.__class__) == "<class 'timepulse.models.lstm.LSTM'>"
     assert lstm.horizon == 1
     assert lstm.window_size == 12
     assert lstm.model == None

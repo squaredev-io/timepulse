@@ -1,25 +1,24 @@
 import pandas as pd
 import pytest
-from src.models.xgboost import XGBRegressorModel
-from src.processing.standard_scaler import StandardScalerWrapper
-from src.tests.v1.conftest import get_order_number
-from src.tests.utils.pipelines import load_and_preprocess_data_pipeline, run_model
-import unittest
-from unittest.mock import patch, call
+from timepulse.models.xgboost import XGBRegressorModel
+from timepulse.utils.models import run_model
+from timepulse.processing.standard_scaler import StandardScalerWrapper
+from tests.v1.conftest import get_order_number
+from tests.utils.pipelines import multi_data_pipeline
+from unittest.mock import patch
 
 
 @pytest.mark.order(get_order_number("test_xgboost"))
 def test_xgboost():
-    X_train, y_train, X_test, y_test = load_and_preprocess_data_pipeline(
-        data_path='/Users/nikosavgeros/Desktop/Projects/Sunrise Archive/data/ACO',
+    X_train, y_train, X_test, y_test = multi_data_pipeline(
         location_name='Spain',
         country_code='ES', 
-        place_filter='etap', 
+        place_filter='b', 
         window_size=3,
         target_column='value', 
         splitter_column='stringency_category'
     )
-    
+
     assert X_train.shape[0] == y_train.shape[0], "Number of training samples in X_train and y_train do not match"
     assert X_test.shape[0] == y_test.shape[0], "Number of testing samples in X_test and y_test do not match"
 

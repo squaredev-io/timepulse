@@ -3,12 +3,11 @@ import numpy as np
 from itertools import product
 from datetime import datetime, timedelta
 import random
-# from src.utils.timestamps import get_timestamp, get_old_timestamp
 
 
-def create_aco_mock_data(start_year=2016, end_year=2022, places=['presa', 'etap', 'desaladora', 'rfuengirola', 'rguadalmansa', 'gibraltar', 'si4']):
+def create_mock_data(start_year=2016, end_year=2022, places=['a', 'b', 'c', 'd', 'e', 'f', 'g']):
     """
-    Generate mock ACO (water treatment) data for specified years, months, and places.
+    Generate mock data for specified years, months, and places.
 
     Parameters:
     - start_year (int): The start year for the data range (default: 2016).
@@ -22,13 +21,13 @@ def create_aco_mock_data(start_year=2016, end_year=2022, places=['presa', 'etap'
     - mock_df = create_aco_mock_data(2016, 2022)
     """
     statistics = {
-        'presa': {'mean': 3794562.457875, 'std': 1572850.7034559783, 'count': 80, 'min': 1614366.0, 'max': 7230859.2},
-        'etap': {'mean': 3743471.0, 'std': 1529672.2210805719, 'count': 80, 'min': 1613450.0, 'max': 6844340.0},
-        'desaladora': {'mean': 465997.7848101266, 'std': 374236.3678958305, 'count': 79, 'min': 0.0, 'max': 1286498.0},
-        'rfuengirola': {'mean': 389683.2125, 'std': 133699.41973901461, 'count': 80, 'min': 137743.0, 'max': 676129.0},
-        'rguadalmansa': {'mean': 0.0, 'std': 0.0, 'count': 80, 'min': 0.0, 'max': 0.0},
-        'gibraltar': {'mean': 48711.2625, 'std': 118549.19224126669, 'count': 80, 'min': 0.0, 'max': 535042.0},
-        'si4': {'mean': 1478.0375, 'std': 9437.022339919808, 'count': 80, 'min': 0.0, 'max': 69600.0}
+        'a': {'mean': 3794562.457875, 'std': 1572850.7034559783, 'count': 80, 'min': 1614366.0, 'max': 7230859.2},
+        'b': {'mean': 3743471.0, 'std': 1529672.2210805719, 'count': 80, 'min': 1613450.0, 'max': 6844340.0},
+        'c': {'mean': 465997.7848101266, 'std': 374236.3678958305, 'count': 79, 'min': 0.0, 'max': 1286498.0},
+        'd': {'mean': 389683.2125, 'std': 133699.41973901461, 'count': 80, 'min': 137743.0, 'max': 676129.0},
+        'e': {'mean': 0.0, 'std': 0.0, 'count': 80, 'min': 0.0, 'max': 0.0},
+        'f': {'mean': 48711.2625, 'std': 118549.19224126669, 'count': 80, 'min': 0.0, 'max': 535042.0},
+        'g': {'mean': 1478.0375, 'std': 9437.022339919808, 'count': 80, 'min': 0.0, 'max': 69600.0}
     }
 
     year_range = list(range(start_year, end_year+1))
@@ -44,13 +43,6 @@ def create_aco_mock_data(start_year=2016, end_year=2022, places=['presa', 'etap'
         values.append(round(value[0], 1))
     df['value'] = values
     return df
-
-# forecasts_mock_data = [
-#     {"date": get_timestamp(), "place": "gibraltar", "value": 37, "confidence": 0.9},
-#     {"date": get_timestamp(), "place": "rguadalmansa", "value": 3417, "confidence": 0.6},
-#     {"date": get_timestamp(), "place": "rguadalmansa", "value": 9867, "confidence": 0.7},
-#     {"date": get_timestamp(), "place": "si4", "value": 723, "confidence": 0.8},
-# ]
 
 
 format = "%Y-%m-%d %H:%M:%S"

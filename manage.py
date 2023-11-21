@@ -36,7 +36,7 @@ def test():
 
 @app.command("coverage")
 def coverage():
-    os.system(f"ENV=test pytest -s --cov=src")
+    os.system(f"ENV=test pytest -s --cov=timepulse")
     # os.system(f"coverage report")
 
 

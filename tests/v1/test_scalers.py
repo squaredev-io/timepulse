@@ -1,7 +1,7 @@
 import pytest
-from src.tests.v1.conftest import get_order_number
-from src.processing.min_max_scaler import MinMaxScalerWrapper
-from src.processing.standard_scaler import StandardScalerWrapper
+from tests.v1.conftest import get_order_number
+from timepulse.processing.min_max_scaler import MinMaxScalerWrapper
+from timepulse.processing.standard_scaler import StandardScalerWrapper
 import numpy as np
 
 

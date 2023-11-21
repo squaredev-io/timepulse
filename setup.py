@@ -1,10 +1,13 @@
 from setuptools import setup, find_packages
 
+with ("README.md", "r") as f:
+    long_description = f.read()
+
 setup(
     name='timepulse',
     version='0.0.1',
     description='A set of tools to help with timeseries flow',
-    long_description=open('README.md').read(),
+    long_description=long_description,
     long_description_content_type='text/markdown',
     author='SQUAREDEV BV',
     author_email='hello@squaredev.io',

@@ -1,5 +1,5 @@
 from pytest import fixture
-from src.tests.utils.maps import v1_test_order_map
+from tests.utils.maps import v1_test_order_map
 import logging, os, shutil
 
 logging.getLogger("tensorflow").disabled = True
@@ -30,8 +30,10 @@ fixture as a parameter in the test function
 
 @fixture(scope="session", autouse=True)
 def setup_storage():
+    os.mkdir("storage")
     yield True
-    shutil.rmtree("storage")
+    if os.path.isdir("storage"):
+        shutil.rmtree("storage")
 
 
 class DataHolder:
