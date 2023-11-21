@@ -1,5 +1,8 @@
 .DS_Store
 /storage
+/build
+/dist
+/timepulse.egg-info
 __pycache__/
 *.py[cod]
 *$py.class
