@@ -3,16 +3,15 @@ import pytest
 from timepulse.models.nbeats import NBeats
 from timepulse.utils.models import run_model
 from tests.v1.conftest import get_order_number
-from tests.utils.pipelines import load_and_preprocess_data_pipeline
+from tests.utils.pipelines import multi_data_pipeline
 
 
 @pytest.mark.order(get_order_number("test_nbeats"))
 def test_nbeats():
-    X_train, y_train, X_test, y_test = load_and_preprocess_data_pipeline(
-        data_path='/Users/nikosavgeros/Desktop/Projects/Sunrise Archive/data/ACO',
+    X_train, y_train, X_test, y_test = multi_data_pipeline(
         location_name='Spain',
         country_code='ES', 
-        place_filter='etap', 
+        place_filter='a', 
         window_size=3,
         target_column='value', 
         splitter_column='stringency_category'

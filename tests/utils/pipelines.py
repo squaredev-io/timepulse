@@ -4,62 +4,17 @@ import tensorflow as tf
 from timepulse.data.data_collection import fetch_holidays, fetch_stringency_index, fetch_weather
 from timepulse.utils.splits import create_multivar_dataframe, create_windowed_dataframe, stratified_split_data
 from timepulse.metrics.regression_metrics import evaluate_preds
-from tests.v1.mock_data import create_aco_mock_data
+from tests.v1.mock_data import create_mock_data
 import os
 
 
-def preprocess_aco_data(df):
-    """
-    Load and preprocess ACO data from a parquet file.
-
-    Parameters:
-    - df (pd.DataFrame): Initial ACO DataFrame.
-
-    Returns:
-    - df (pd.DataFrame): Preprocessed DataFrame with dates as the index.
-    """
-    # Handle missing values by backward filling
-    df['value'] = df['value'].bfill()
-
-    # Create dates as index
-    df['Date'] = pd.to_datetime(df[['year', 'month']].assign(day=1)) + pd.DateOffset(months=1) - pd.DateOffset(days=1)
-    df['Date'] = df['Date'].dt.strftime('%Y-%m-%d')
-    df.set_index('Date', inplace=True)
-    df.index = pd.to_datetime(df.index)
-    return df
-
-
-def load_and_preprocess_aco_data(parquet_file):
-    """
-    Load and preprocess ACO data from a parquet file.
-
-    Parameters:
-    - parquet_file (str): Path to the parquet file.
-
-    Returns:
-    - df (pd.DataFrame): Preprocessed DataFrame with dates as the index.
-    """
-    # Read parquet file
-    df = pd.read_parquet(parquet_file)
-
-    # Handle missing values by backward filling
-    df['value'] = df['value'].bfill()
-
-    # Create dates as index
-    df['Date'] = pd.to_datetime(df[['year', 'month']].assign(day=1)) + pd.DateOffset(months=1) - pd.DateOffset(days=1)
-    df['Date'] = df['Date'].dt.strftime('%Y-%m-%d')
-    df.set_index('Date', inplace=True)
-    df.index = pd.to_datetime(df.index)
-    return df
-
-
-def load_and_preprocess_data_pipeline(data_path, location_name, country_code, place_filter, window_size, target_column, splitter_column):
-    if os.path.exists(data_path):
-        df = load_and_preprocess_aco_data(f'{data_path}/water_network_inflow.parquet')
-    else:
-        df = create_aco_mock_data(start_year=2016, end_year=2022)
-    df = preprocess_aco_data(df)
+def multi_data_pipeline(location_name, country_code, place_filter, window_size, target_column, splitter_column):
+    df = create_mock_data(start_year=2016, end_year=2022)
     df = df[df['place']==place_filter]
+    df['Date'] = pd.to_datetime(df[['year', 'month']].assign(day=1)) + pd.DateOffset(months=1) - pd.DateOffset(days=1)
+    df['Date'] = df['Date'].dt.strftime('%Y-%m-%d')
+    df.set_index('Date', inplace=True)
+    df.index = pd.to_datetime(df.index)
     df = df[['value']]
     start_date = df.index.min().strftime('%Y-%m-%d')
     end_date = df.index.max().strftime('%Y-%m-%d')

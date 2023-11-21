@@ -4,16 +4,15 @@ from timepulse.models.nn import MultivariateDenseModel
 from timepulse.utils.models import run_model
 from timepulse.processing.min_max_scaler import MinMaxScalerWrapper
 from tests.v1.conftest import get_order_number
-from tests.utils.pipelines import load_and_preprocess_data_pipeline
+from tests.utils.pipelines import multi_data_pipeline
 
 
 @pytest.mark.order(get_order_number("test_nn"))
 def test_nn():
-    X_train, y_train, X_test, y_test = load_and_preprocess_data_pipeline(
-        data_path='C:/Users/user/Desktop/Squaredev/Projects/Sunrise/repos/Sunrise Archive/data/ACO',
+    X_train, y_train, X_test, y_test = multi_data_pipeline(
         location_name='Spain',
         country_code='ES', 
-        place_filter='etap', 
+        place_filter='a', 
         window_size=3,
         target_column='value', 
         splitter_column='stringency_category'
