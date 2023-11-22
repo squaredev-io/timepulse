@@ -152,7 +152,7 @@ def fetch_weather(location_name, start_date, end_date, case='historical', aggreg
                                     'T2M_MAX':'temperature_2m_max',
                                     'PRECTOTCORR':'precipitation_sum'}, inplace=True)
         except Exception:
-            return pd.DataFrame(columns=['avg_temperature'])
+            return pd.DataFrame(columns=['avg_temperature', 'precipitation_sum'], index=['Date'])
 
     weather_data_df['avg_temperature'] = (weather_data_df['temperature_2m_max'] + weather_data_df['temperature_2m_min']) / 2
     weather_data_df.rename(columns={'time':'Date'}, inplace=True)
