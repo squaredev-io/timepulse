@@ -1,5 +1,4 @@
 v1_test_order_map = [
-    "test_weather_retriever_data",
     "test_regression_metrics",
     "test_splits",
     "test_data_collection",
