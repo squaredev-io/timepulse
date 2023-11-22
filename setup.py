@@ -74,6 +74,7 @@ setup(
         "tzdata==2023.3",
         "urllib3==2.1.0",
         "Werkzeug==3.0.1",
+        "weather_data_retriever==1.1",
         "wrapt==1.14.1",
         "xgboost==2.0.2",
         "zipp==3.17.0",

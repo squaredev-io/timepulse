@@ -1,8 +1,7 @@
 import pandas as pd
 import re
 import holidays
-from .weather_data_retriever.pipelines import fetch_open_meteo_weather_data
-
+from weather_data_retriever.pipelines import fetch_open_meteo_weather_data, fetch_larc_power_historical_weather_data
 
 def fetch_stringency_index(country):
     """
@@ -132,13 +131,28 @@ def fetch_weather(location_name, start_date, end_date, case='historical', aggreg
     pd.DataFrame
         Monthly weather data with average temperature and total precipitation for each month.
     """
-    weather_data_df, _ = fetch_open_meteo_weather_data(
-        location_name=location_name,
-        start_date=start_date,
-        end_date=end_date,
-        case=case,
-        aggregation=aggregation
-    )
+    try:
+        weather_data_df, _ = fetch_open_meteo_weather_data(
+            location_name=location_name,
+            start_date=start_date,
+            end_date=end_date,
+            case=case,
+            aggregation=aggregation
+        )
+    except Exception:
+        try:
+            weather_data_df = fetch_larc_power_historical_weather_data(        
+                location_name=location_name,
+                start_date=start_date,
+                end_date=end_date,
+                aggregation=aggregation
+            )
+            weather_data_df.rename({'date':'Date',
+                                    'T2M_MIN':'temperature_2m_min',
+                                    'T2M_MAX':'temperature_2m_max'}, inplace=True)
+        except Exception:
+            return pd.DataFrame(columns=['avg_temperature'])
+
     weather_data_df['avg_temperature'] = (weather_data_df['temperature_2m_max'] + weather_data_df['temperature_2m_min']) / 2
     weather_data_df.rename(columns={'time':'Date'}, inplace=True)
     weather_data_df.index = pd.to_datetime(weather_data_df['Date']).dt.date
