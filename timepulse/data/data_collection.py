@@ -117,65 +117,6 @@ def fetch_holidays(years, country_code):
     return monthly_holidays_df
 
 
-def fetch_weather(location_name, start_date, end_date, case="historical", aggregation="daily"):
-    """
-    Fetches and preprocesses monthly weather data from open meteo api.
-
-    Parameters
-    ----------
-    location_name : str
-        Name of the location for which weather data is fetched.
-
-    start_date : str
-        Start date for fetching weather data (format: 'YYYY-MM-DD').
-
-    end_date : str
-        End date for fetching weather data (format: 'YYYY-MM-DD').
-
-    case : str, optional
-        Type of weather data to fetch (default: 'historical').
-
-    aggregation : str, optional
-        Aggregation level of weather data (default: 'daily').
-
-    Returns
-    -------
-    pd.DataFrame
-        Monthly weather data with average temperature and total precipitation for each month.
-    """
-    try:
-        weather_data_df, _ = fetch_open_meteo_weather_data(
-            location_name=location_name, start_date=start_date, end_date=end_date, case=case, aggregation=aggregation
-        )
-    except Exception:
-        try:
-            weather_data_df = fetch_larc_power_historical_weather_data(
-                location_name=location_name, start_date=start_date, end_date=end_date, aggregation=aggregation
-            )
-            weather_data_df.rename(
-                {
-                    "date": "Date",
-                    "T2M_MIN": "temperature_2m_min",
-                    "T2M_MAX": "temperature_2m_max",
-                    "PRECTOTCORR": "precipitation_sum",
-                },
-                inplace=True,
-            )
-        except Exception:
-            return pd.DataFrame(columns=["avg_temperature", "precipitation_sum"], index=["Date"])
-
-    weather_data_df["avg_temperature"] = (
-        weather_data_df["temperature_2m_max"] + weather_data_df["temperature_2m_min"]
-    ) / 2
-    weather_data_df.rename(columns={"time": "Date"}, inplace=True)
-    weather_data_df.index = pd.to_datetime(weather_data_df["Date"]).dt.date
-    weather_data_df.index = pd.to_datetime(weather_data_df.index)
-    weather_data_df = weather_data_df[["avg_temperature", "precipitation_sum"]]
-    monthly_weather_data_df = weather_data_df.resample("M").mean()
-    monthly_weather_data_df["avg_temperature"] = monthly_weather_data_df["avg_temperature"].astype(int)
-    return monthly_weather_data_df
-
-
 def load_weather(country: Literal["italy", "spain"] = "spain"):
     path = timepulse.__path__[0]
     df = pd.read_csv(f"{path}/data/datasets/weather_data_{country}.csv", index_col="Date")
