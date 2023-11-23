@@ -1,4 +1,5 @@
 import tensorflow as tf
+import numpy as np
 
 def calculate_mae(y_true, y_pred):
     """Calculate Mean Absolute Error."""
@@ -17,11 +18,24 @@ def calculate_mape(y_true, y_pred):
     """Calculate Mean Absolute Percentage Error."""
     return tf.keras.metrics.mean_absolute_percentage_error(y_true, y_pred).numpy()
 
+def calculate_smape(y_true, y_pred):
+    """
+    Calculate Symmetric Mean Absolute Percentage Error (SMAPE).
+    """
+    numerator = np.abs(y_pred - y_true)
+    denominator = (np.abs(y_pred) + np.abs(y_true)) / 2
+    mask = denominator != 0
+    smape = np.mean(200 * np.divide(numerator[mask], denominator[mask]))
+    return smape
+
 def calculate_mase(y_true, y_pred):
     """Calculate Mean Absolute Scaled Error."""
     mae = tf.reduce_mean(tf.abs(y_true - y_pred))
     mae_naive_no_season = tf.reduce_mean(tf.abs(y_true[1:] - y_true[:-1]))
-    return mae.numpy() / mae_naive_no_season.numpy()
+    if mae_naive_no_season == 0:
+        return 0.0
+    else:
+        return mae.numpy() / mae_naive_no_season.numpy()
 
 def calculate_r2(y_true, y_pred):
     """Calculate R-squared (coefficient of determination)."""
@@ -50,6 +64,7 @@ def evaluate_preds(y_true, y_pred):
         - "mse": Mean Squared Error,
         - "rmse": Root Mean Squared Error,
         - "mape": Mean Absolute Percentage Error,
+        - "smape": Symmetric Mean Absolute Percentage Error,
         - "mase": Mean Absolute Scaled Error,
         - "r2_score": R-squared.
     """
@@ -62,6 +77,7 @@ def evaluate_preds(y_true, y_pred):
     mse = calculate_mse(y_true, y_pred)
     rmse = calculate_rmse(y_true, y_pred)
     mape = calculate_mape(y_true, y_pred)
+    smape = calculate_smape(y_true, y_pred)
     mase = calculate_mase(y_true, y_pred)
     r2 = calculate_r2(y_true, y_pred)
 
@@ -69,5 +85,6 @@ def evaluate_preds(y_true, y_pred):
             "mse": mse,
             "rmse": rmse,
             "mape": mape,
+            "smape":smape,
             "mase": mase,
             "r2_score": r2}

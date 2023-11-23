@@ -30,7 +30,7 @@ def test_xgboost():
     y_pred, result_metrics = run_model(model_instance, X_train, y_train, X_test, y_test, verbose=0)
     assert y_pred.shape == y_test.shape, "Shape mismatch between y_pred and y_test"
 
-    expected_metrics = ['r2_score', 'mae', 'mse', 'rmse', 'mape', 'mase']
+    expected_metrics = ["r2_score", "mae", "mse", "rmse", "mape", "smape", "mase"]
     assert all(metric in result_metrics for metric in expected_metrics), "Not all expected metrics are present in the results"
     assert all(result_metrics[metric] is not None for metric in expected_metrics), "Some metric values are None"
 
@@ -40,7 +40,7 @@ def test_xgboost():
     y_pred, result_metrics = run_model(default_model_instance, X_train, y_train, X_test, y_test, verbose=0)
     assert y_pred.shape == y_test.shape, "Shape mismatch between y_pred and y_test"
 
-    expected_metrics = ['r2_score', 'mae', 'mse', 'rmse', 'mape', 'mase']
+    expected_metrics = ["r2_score", "mae", "mse", "rmse", "mape", "smape", "mase"]
     assert all(metric in result_metrics for metric in expected_metrics), "Not all expected metrics are present in the results"
     assert all(result_metrics[metric] is not None for metric in expected_metrics), "Some metric values are None"
 
