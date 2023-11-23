@@ -1,8 +1,7 @@
 import tensorflow as tf
 from datetime import datetime
-from timepulse.utils.models import create_model_checkpoint
+from timepulse.utils.models import create_early_stopping
 from timepulse.processing.min_max_scaler import MinMaxScalerWrapper
-
 
 class MultivariateDenseModel:
     def __init__(
@@ -14,6 +13,7 @@ class MultivariateDenseModel:
         epochs=100,
         batch_size=128,
         scaler_class=MinMaxScalerWrapper(),
+        callbacks = [create_early_stopping()]
     ):
         self.horizon = horizon
         self.n_neurons0 = n_neurons0
@@ -25,6 +25,7 @@ class MultivariateDenseModel:
         self.batch_size = batch_size
         self.model_name = f"dense_model"
         self.model = None
+        self.callbacks = callbacks
 
     def build(self):
         layers = [tf.keras.layers.Dense(self.n_neurons0, activation="relu")]
@@ -50,7 +51,7 @@ class MultivariateDenseModel:
             batch_size=self.batch_size,
             verbose=verbose,
             validation_data=(X_val, y_val),
-            callbacks=[create_model_checkpoint(model_name=self.model_name)],
+            callbacks=self.callbacks,
         )
 
     def predict(self, X_test):

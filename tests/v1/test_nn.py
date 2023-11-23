@@ -22,7 +22,7 @@ def test_nn():
     assert X_test.shape[0] == y_test.shape[0], "Number of testing samples in X_test and y_test do not match"
 
     model_instance = MultivariateDenseModel(horizon=1, scaler_class=MinMaxScalerWrapper())
-    y_pred, result_metrics = run_model(model_instance, X_train, y_train, X_test, y_test, threshold=0.75, verbose=1)
+    y_pred, result_metrics = run_model(model_instance, X_train, y_train, X_test, y_test, verbose=1)
 
     assert y_pred.shape == y_test.shape, "Shape mismatch between y_pred and y_test"
 
@@ -31,7 +31,7 @@ def test_nn():
     assert all(result_metrics[metric] is not None for metric in expected_metrics), "Some metric values are None"
 
     model_instance_with_no_scaler = MultivariateDenseModel(horizon=1, scaler_class=None)
-    y_pred, result_metrics = run_model(model_instance_with_no_scaler, X_train, y_train, X_test, y_test, threshold=0.75, verbose=1)
+    y_pred, result_metrics = run_model(model_instance_with_no_scaler, X_train, y_train, X_test, y_test, verbose=1)
 
     assert y_pred.shape == y_test.shape, "Shape mismatch between y_pred and y_test"
 
