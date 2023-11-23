@@ -27,7 +27,7 @@ def test_lstm():
     assert str(type(lstm.model)) == "<class 'keras.src.engine.functional.Functional'>"
     assert y_pred.shape[0] == y_test.shape[0], "Shape mismatch between y_pred and y_test"
 
-    expected_metrics = ["r2_score", "mae", "mse", "rmse", "mape", "mase"]
+    expected_metrics = ["r2_score", "mae", "mse", "rmse", "mape", "smape", "mase"]
     assert all(
         metric in result_metrics for metric in expected_metrics
     ), "Not all expected metrics are present in the results"
