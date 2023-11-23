@@ -94,7 +94,7 @@ setup(
     python_requires=">=3.9",  # Minimum version requirement of the package
     keywords="timeseries tools ml flow python machine learning",  # Short descriptors for your package
     package_data={
-        "my_library": ["data/*.dat"],  # Include any package data in a subdirectory
+        "timepulse": ["data/datasets/*.csv"],  # Include any package data in a subdirectory
     },
     entry_points={
         "console_scripts": [

@@ -27,7 +27,7 @@ def test_xgboost():
                                         max_depth=5, learning_rate=0.1,
                                         early_stopping_rounds=50)
 
-    y_pred, result_metrics = run_model(model_instance, X_train, y_train, X_test, y_test, threshold=0.75, verbose=0)
+    y_pred, result_metrics = run_model(model_instance, X_train, y_train, X_test, y_test, verbose=0)
     assert y_pred.shape == y_test.shape, "Shape mismatch between y_pred and y_test"
 
     expected_metrics = ['r2_score', 'mae', 'mse', 'rmse', 'mape', 'mase']
@@ -37,7 +37,7 @@ def test_xgboost():
     default_model_instance = XGBRegressorModel(scaler_class=None)
     assert not default_model_instance.params, "The default Constructor is not called"
 
-    y_pred, result_metrics = run_model(default_model_instance, X_train, y_train, X_test, y_test, threshold=0.75, verbose=0)
+    y_pred, result_metrics = run_model(default_model_instance, X_train, y_train, X_test, y_test, verbose=0)
     assert y_pred.shape == y_test.shape, "Shape mismatch between y_pred and y_test"
 
     expected_metrics = ['r2_score', 'mae', 'mse', 'rmse', 'mape', 'mase']

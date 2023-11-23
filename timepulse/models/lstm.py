@@ -1,17 +1,18 @@
-from timepulse.utils.models import create_model_checkpoint
+from timepulse.utils.models import create_early_stopping
 import tensorflow as tf
 from datetime import datetime
 import os
 
 
 class LSTM:
-    def __init__(self, window_size, horizon=1, epochs=100, batch_size=None):
+    def __init__(self, window_size, horizon=1, epochs=100, batch_size=None, callbacks=[create_early_stopping()]):
         self.horizon = horizon
         self.window_size = window_size
         self.epochs = epochs
         self.batch_size = batch_size
         self.model = None
         self.model_name = "lstm_model"
+        self.callbacks = callbacks
 
     def build(self):
         # Let's build an LSTM model with the Functional API
@@ -38,7 +39,7 @@ class LSTM:
             verbose=verbose,
             batch_size=self.batch_size,
             validation_data=(X_val, y_val),
-            callbacks=[create_model_checkpoint(model_name=self.model_name)],
+            callbacks=self.callbacks,
         )
 
     def predict(self, values):

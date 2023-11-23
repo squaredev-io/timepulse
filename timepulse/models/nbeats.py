@@ -1,7 +1,6 @@
 import tensorflow as tf
 from datetime import datetime
-from timepulse.utils.models import create_model_checkpoint
-
+from timepulse.utils.models import create_early_stopping
 
 # Create NBeatsBlock custom layer
 class NBeatsBlock(tf.keras.layers.Layer):
@@ -88,7 +87,19 @@ class NBeats(tf.keras.Model):
     """
 
     def __init__(
-        self, window_size, horizon=1, n_neurons=512, n_layers=4, n_stacks=30, epochs=5000, batch_size=1024, **kwargs
+        self, 
+        window_size,
+        horizon=1,
+        n_neurons=512,
+        n_layers=4, 
+        n_stacks=30, 
+        epochs=5000, 
+        batch_size=1024, 
+        callbacks=[
+                tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss", patience=100, verbose=1),
+                create_early_stopping(monitor="val_loss", patience=200, restore_best_weights=True),
+            ],
+        **kwargs
     ):
         super().__init__(**kwargs)
         self.input_size = window_size * horizon
@@ -102,6 +113,7 @@ class NBeats(tf.keras.Model):
         self.batch_size = batch_size
         self.model_name = f"nbeats_model"
         self.model = None
+        self.callbacks = callbacks
 
         # Create the initial NBeatsBlock layer
         self.initial_block = NBeatsBlock(
@@ -141,11 +153,7 @@ class NBeats(tf.keras.Model):
             validation_data=(X_val, y_val),
             verbose=verbose,
             batch_size=self.batch_size,
-            callbacks=[
-                tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=200, restore_best_weights=True),
-                tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss", patience=100, verbose=1),
-                create_model_checkpoint(model_name=self.model_name),
-            ],
+            callbacks=self.callbacks,
         )
 
     def predict(self, X_test):
