@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import StratifiedShuffleSplit
+from typing import Union, Tuple
 
 
-def create_multivar_dataframe(base_df, *additional_dfs):
+def create_multivar_dataframe(base_df: pd.DataFrame, *additional_dfs: pd.DataFrame) -> pd.DataFrame:
     """
     Create a multivariate DataFrame by merging a base DataFrame with additional DataFrames based on a date range.
 
@@ -43,7 +44,7 @@ def create_multivar_dataframe(base_df, *additional_dfs):
     return multivar_df
 
 
-def create_windowed_dataframe(base_df, target_column, window_size=3):
+def create_windowed_dataframe(base_df: pd.DataFrame, target_column: str, window_size: int = 3) -> pd.DataFrame:
     """
     Create a windowed DataFrame by shifting values of a specified column.
 
@@ -72,7 +73,7 @@ def create_windowed_dataframe(base_df, target_column, window_size=3):
     return windowed_df
 
 
-def stratified_split_data(data, target_column, splitter_column, test_size=0.2, random_state=42, n_splits=1, strat_split_index=0):
+def stratified_split_data(data: pd.DataFrame, target_column: str, splitter_column: str, test_size: float = 0.2, random_state: int = 42, n_splits: int = 1, strat_split_index: int = 0) -> Union[pd.DataFrame, np.array, pd.DataFrame, np.array]:
     """
     Perform stratified splitting of data into train and test sets.
 
@@ -115,7 +116,7 @@ def stratified_split_data(data, target_column, splitter_column, test_size=0.2, r
     return X_train, y_train, X_test, y_test
 
 
-def get_labelled_windows(x, horizon=1):
+def get_labelled_windows(x, horizon: int = 1) -> Tuple[np.array, np.array]:
     """
     Creates labels for windowed dataset.
 
@@ -125,7 +126,7 @@ def get_labelled_windows(x, horizon=1):
     return x[:, :-horizon], x[:, -horizon:]
 
 
-def make_windows(x, window_size=7, horizon=1):
+def make_windows(x, window_size: int = 7, horizon: int = 1) -> Tuple[np.array, np.array]:
     """
     Create function to view NumPy arrays as windows. 
     Turns a 1D array into a 2D array of sequential windows of window_size.
@@ -145,11 +146,11 @@ def make_windows(x, window_size=7, horizon=1):
     return windows, labels
 
 
-def make_train_test_splits(windows, labels, test_split=0.1):
+def make_train_test_splits(windows: int, labels: int, test_split: float = 0.1):
     """
     Splits matching pairs of windows and labels into train and test splits.
     """
-    split_size = int(len(windows) * (1 - test_split))  # default: 90% train / 10% test
+    split_size = int(len(windows) * (1 - test_split))
     train_windows = windows[:split_size]
     train_labels = labels[:split_size]
     test_windows = windows[split_size:]
@@ -157,7 +158,7 @@ def make_train_test_splits(windows, labels, test_split=0.1):
     return train_windows, test_windows, train_labels, test_labels
 
 
-def make_window_splits(values, size=10, horizon=1):
+def make_window_splits(values: np.array, size:int = 10, horizon: int = 1):
     """
     Splits a time series into input windows and corresponding labels.
     """

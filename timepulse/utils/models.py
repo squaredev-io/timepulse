@@ -1,8 +1,10 @@
 import tensorflow as tf
 import os
+import numpy as np
+from typing import Tuple, Dict, Type
 from timepulse.metrics.regression_metrics import evaluate_preds
 
-def create_model_checkpoint(model_name, save_path='storage'):
+def create_model_checkpoint(model_name: str, save_path: str = 'storage') -> tf.keras.callbacks.ModelCheckpoint:
     """
     Creates a ModelCheckpoint callback for saving the best model during training.
 
@@ -24,14 +26,14 @@ def create_model_checkpoint(model_name, save_path='storage'):
                                             save_best_only=True)
 
 
-def create_early_stopping(monitor='val_loss', patience=50, restore_best_weights=True):
+def create_early_stopping(monitor: str = 'val_loss', patience: int = 50, restore_best_weights: bool = True) -> tf.keras.callbacks.EarlyStopping:
     """
     Create an EarlyStopping callback for a Keras model.
 
     Parameters
     ----------
     monitor : str, optional
-        Quantity to be monitored (default is 'vali_loss').
+        Quantity to be monitored (default is 'val_loss').
     patience : int, optional
         Number of epochs with no improvement after which training will be stopped (default is 50).
     restore_best_weights : bool, optional
@@ -49,35 +51,33 @@ def create_early_stopping(monitor='val_loss', patience=50, restore_best_weights=
     return tf.keras.callbacks.EarlyStopping(monitor=monitor, patience=patience, restore_best_weights=restore_best_weights)
 
 
-def run_model(model_instance, X_train, y_train, X_test, y_test, verbose=0):
+def run_model(model_instance: Type, X_train: np.array, y_train: np.array, X_test: np.array, y_test: np.array, verbose=0) -> Tuple[np.array, Dict]:
     """
     Train and evaluate a Keras model.
 
     Parameters
     ----------
-    model_instance : tf.keras.Model
-        An instance of a Keras model.
-    X_train : Union[tf.Tensor, tf.data.Dataset]
+    model_instance : Type
+        An instance of any class.
+    X_train : np.array
         Input features for training.
-    y_train : Union[tf.Tensor, tf.data.Dataset]
+    y_train : np.array
         Target labels for training.
-    X_test : Union[tf.Tensor, tf.data.Dataset]
+    X_test : np.array
         Input features for testing.
-    y_test : Union[tf.Tensor, tf.data.Dataset]
+    y_test : np.array
         Target labels for testing.
-    threshold : float, optional
-        Threshold for binary classification (default is 0.75).
     verbose : int, optional
         Verbosity mode (default is 0).
 
     Returns
     -------
-    Tuple[tf.Tensor, dict]
+    Tuple[np.array, dict]
         Tuple containing the model predictions and evaluation metrics.
 
     Example
     -------
-    y_pred, result_metrics = run_model(model_instance, X_train, y_train, X_test, y_test, threshold=0.8, verbose=1)
+    y_pred, result_metrics = run_model(model_instance, X_train, y_train, X_test, y_test, verbose=0)
     """
     model_instance.build()
     if hasattr(model_instance, 'compile'):

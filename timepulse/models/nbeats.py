@@ -1,41 +1,81 @@
 import tensorflow as tf
-from datetime import datetime
+import numpy as np
 from timepulse.utils.models import create_early_stopping
+from typing import Tuple, List, Dict
 
-# Create NBeatsBlock custom layer
 class NBeatsBlock(tf.keras.layers.Layer):
+    """
+    Custom layer for the N-Beats model, consisting of stacked fully connected layers with ReLU activation,
+    followed by a theta layer with linear activation.
+
+    Parameters
+    ----------
+    input_size : int
+        The size of the input for the block.
+
+    theta_size : int
+        The size of the theta layer.
+
+    horizon : int
+        The forecasting horizon.
+
+    n_neurons : int
+        The number of neurons in each hidden layer.
+
+    n_layers : int
+        The number of hidden layers in the block.
+
+    **kwargs
+        Additional keyword arguments for the parent class (input_shape, trainable, name).
+
+    Returns
+    -------
+    backcast : np.array
+        The backcast predictions.
+
+    forecast : np.array
+        The forecast predictions.
+    """
     def __init__(
-        self,  # the constructor takes all the hyperparameters for the layer
+        self, 
         input_size: int,
         theta_size: int,
         horizon: int,
         n_neurons: int,
         n_layers: int,
-        **kwargs,
-    ):  # the **kwargs argument takes care of all of the arguments for the parent class (input_shape, trainable, name)
+        **kwargs: Dict,
+    ) -> None:  
         super().__init__(**kwargs)
         self.input_size = input_size
         self.theta_size = theta_size
         self.horizon = horizon
         self.n_neurons = n_neurons
         self.n_layers = n_layers
-
-        # Block contains stack of 4 fully connected layers each has ReLU activation
         self.hidden = [tf.keras.layers.Dense(n_neurons, activation="relu") for _ in range(n_layers)]
-        # Output of block is a theta layer with linear activation
         self.theta_layer = tf.keras.layers.Dense(theta_size, activation="linear", name="theta")
 
-    def call(self, inputs):  # the call method is what runs when the layer is called
+    def call(self, inputs: np.array) -> Tuple[np.array, np.array]:
+        """
+        Forward pass through the NBeatsBlock.
+
+        Parameters
+        ----------
+        inputs : np.array
+            The input data.
+
+        Returns
+        -------
+        Tuple[np.array, np.array]
+            Containing the backcast and forecast predictions.
+        """
         x = inputs
-        for layer in self.hidden:  # pass inputs through each hidden layer
+        for layer in self.hidden:
             x = layer(x)
         theta = self.theta_layer(x)
-        # Output the backcast and forecast from theta
         backcast, forecast = theta[:, : self.input_size], theta[:, -self.horizon :]
         return backcast, forecast
 
 
-# Custom NBeats model
 class NBeats(tf.keras.Model):
     """
     N-Beats Model for time series forecasting.
@@ -57,6 +97,18 @@ class NBeats(tf.keras.Model):
     n_stacks : int, optional, default: 30
         The number of stacked NBeatsBlocks in the model.
 
+    epochs : int, optional, default: 5000
+        The number of training epochs.
+
+    batch_size : int, optional, default: 1024
+        The batch size for training.
+
+    callbacks : List[tf.keras.callbacks.Callback], optional, default: [ReduceLROnPlateau, EarlyStopping]
+        List of callbacks to monitor and control the training process.
+
+    **kwargs
+        Additional keyword arguments for the parent class.
+
     Attributes
     ----------
     model : tf.keras.Model
@@ -70,7 +122,7 @@ class NBeats(tf.keras.Model):
     compile(loss="mae", learning_rate=0.001, metrics=["mae", "mse"])
         Compile the NBeats model with specified loss function, learning rate, and metrics.
 
-    fit(X_train, y_train, X_val, y_val, n_epochs=5000, batch_size=1024, verbose=0)
+    fit(X_train, y_train, X_val, y_val, verbose=0)
         Train the NBeats model with EarlyStopping and ReduceLROnPlateau callbacks.
 
     predict(X_test)
@@ -85,22 +137,21 @@ class NBeats(tf.keras.Model):
     >>> predictions = nbeats_instance.predict(test_data)
     >>> mse = nbeats_model.model.evaluate(test_data)
     """
-
     def __init__(
         self, 
-        window_size,
-        horizon=1,
-        n_neurons=512,
-        n_layers=4, 
-        n_stacks=30, 
-        epochs=5000, 
-        batch_size=1024, 
-        callbacks=[
+        window_size: int,
+        horizon: int = 1,
+        n_neurons: int = 512,
+        n_layers: int = 4, 
+        n_stacks: int = 30, 
+        epochs: int = 5000, 
+        batch_size: int = 1024, 
+        callbacks: List = [
                 tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss", patience=100, verbose=1),
                 create_early_stopping(monitor="val_loss", patience=200, restore_best_weights=True),
             ],
-        **kwargs
-    ):
+        **kwargs: Dict
+    ) -> None:
         super().__init__(**kwargs)
         self.input_size = window_size * horizon
         self.theta_size = window_size * horizon + horizon
@@ -114,8 +165,6 @@ class NBeats(tf.keras.Model):
         self.model_name = f"nbeats_model"
         self.model = None
         self.callbacks = callbacks
-
-        # Create the initial NBeatsBlock layer
         self.initial_block = NBeatsBlock(
             input_size=window_size * horizon,
             theta_size=window_size * horizon + horizon,
@@ -125,7 +174,7 @@ class NBeats(tf.keras.Model):
             name="InitialBlock",
         )
 
-    def build(self):
+    def build(self) -> None:
         stack_input = tf.keras.layers.Input(shape=(self.input_size), name="stack_input")
         backcast, forecast = self.initial_block(stack_input)
         residuals = tf.keras.layers.subtract([stack_input, backcast], name="subtract_00")
@@ -142,10 +191,10 @@ class NBeats(tf.keras.Model):
             forecast = tf.keras.layers.add([forecast, block_forecast], name=f"add_{i}")
         self.model = tf.keras.Model(inputs=stack_input, outputs=forecast, name=self.model_name)
 
-    def compile(self, loss="mae", learning_rate=0.001, metrics=["mae", "mse"]):
+    def compile(self, loss: str = "mae", learning_rate: float = 0.001, metrics: List = ["mae", "mse"]) -> None:
         self.model.compile(loss=loss, optimizer=tf.keras.optimizers.legacy.Adam(learning_rate), metrics=metrics)
 
-    def fit(self, X_train, y_train, X_val, y_val, verbose=0):
+    def fit(self, X_train: np.array, y_train: np.array, X_val: np.array, y_val: np.array, verbose: int = 0) -> None:
         self.model.fit(
             X_train,
             y_train,
@@ -156,6 +205,6 @@ class NBeats(tf.keras.Model):
             callbacks=self.callbacks,
         )
 
-    def predict(self, X_test):
+    def predict(self, X_test: np.array) -> np.array:
         y_pred = self.model.predict(X_test)
         return y_pred.flatten()

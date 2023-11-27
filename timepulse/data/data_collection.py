@@ -1,24 +1,23 @@
 import pandas as pd
 import re, os
 import holidays
-from weather_data_retriever.pipelines import fetch_open_meteo_weather_data, fetch_larc_power_historical_weather_data
-from typing import Literal
+from typing import Literal, List
 import timepulse
 
 
-def fetch_stringency_index(country):
+def fetch_stringency_index(country: Literal["Italy", "Spain"]) -> pd.DataFrame:
     """
     Fetches and preprocesses monthly stringency index data for the specified country.
 
     Parameters
     ----------
-    country : str
+    country : Literal
         Country name for which the stringency index data is fetched.
 
     Returns
     -------
     pd.DataFrame
-        Monthly stringency index data with a calculated mean for 'stringency_index' and mode for 'stringency_category'.
+        Monthly stringency index data with a calculated mode for 'stringency_category'.
 
     Example
     -------
@@ -72,16 +71,16 @@ def fetch_stringency_index(country):
     return monthly_strigency_index_df
 
 
-def fetch_holidays(years, country_code):
+def fetch_holidays(years: List, country_code: Literal["IT", "ES"]) -> pd.DataFrame:
     """
     Fetches and preprocesses monthly holiday data for the specified country.
 
     Parameters
     ----------
-    years : list
+    years : List
         List of years for which holiday data is fetched.
 
-    country_code : str
+    country_code : Literal
         Country code used to retrieve holidays.
 
     Returns
@@ -117,7 +116,7 @@ def fetch_holidays(years, country_code):
     return monthly_holidays_df
 
 
-def load_weather(country: Literal["italy", "spain"] = "spain"):
+def load_weather(country: Literal["italy", "spain"] = "spain") -> pd.DataFrame:
     path = timepulse.__path__[0]
     df = pd.read_csv(f"{path}/data/datasets/weather_data_{country}.csv", index_col="Date")
     df.index = pd.to_datetime(df.index)
