@@ -17,7 +17,6 @@ setup(
         "absl-py==2.0.0",
         "astunparse==1.6.3",
         "cachetools==5.3.2",
-        "coverage==7.3.2",
         "exceptiongroup==1.2.0",
         "flatbuffers==23.5.26",
         "gast==0.5.4",
