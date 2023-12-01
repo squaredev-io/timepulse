@@ -1,7 +1,6 @@
 absl-py==2.0.0
 astunparse==1.6.3
 cachetools==5.3.2
-certifi==2023.11.17
 charset-normalizer==3.3.2
 click==8.1.7
 coverage==7.3.2
