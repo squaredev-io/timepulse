@@ -1,11 +1,11 @@
 import tensorflow as tf
-from datetime import datetime
 from timepulse.utils.models import create_early_stopping
 from timepulse.processing.min_max_scaler import MinMaxScalerWrapper
 from typing import List, Type
 import numpy as np
 
-class MultivariateDenseModel:
+
+class MultivariateDenseWrapper:
     def __init__(
         self,
         horizon: int = 1,
@@ -15,7 +15,7 @@ class MultivariateDenseModel:
         epochs: int = 100,
         batch_size: int = 128,
         scaler_class: Type = MinMaxScalerWrapper(),
-        callbacks: List = [create_early_stopping()]
+        callbacks: List = [create_early_stopping()],
     ) -> None:
         self.horizon = horizon
         self.n_neurons0 = n_neurons0

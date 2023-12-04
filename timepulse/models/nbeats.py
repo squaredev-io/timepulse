@@ -1,7 +1,9 @@
 import tensorflow as tf
 import numpy as np
 from timepulse.utils.models import create_early_stopping
-from typing import Tuple, List, Dict
+from typing import Tuple, List, Dict, Type
+from timepulse.processing.min_max_scaler import MinMaxScalerWrapper
+
 
 class NBeatsBlock(tf.keras.layers.Layer):
     """
@@ -36,15 +38,16 @@ class NBeatsBlock(tf.keras.layers.Layer):
     forecast : np.array
         The forecast predictions.
     """
+
     def __init__(
-        self, 
+        self,
         input_size: int,
         theta_size: int,
         horizon: int,
         n_neurons: int,
         n_layers: int,
         **kwargs: Dict,
-    ) -> None:  
+    ) -> None:
         super().__init__(**kwargs)
         self.input_size = input_size
         self.theta_size = theta_size
@@ -76,7 +79,7 @@ class NBeatsBlock(tf.keras.layers.Layer):
         return backcast, forecast
 
 
-class NBeats(tf.keras.Model):
+class NBeatsWrapper(tf.keras.Model):
     """
     N-Beats Model for time series forecasting.
 
@@ -102,6 +105,9 @@ class NBeats(tf.keras.Model):
 
     batch_size : int, optional, default: 1024
         The batch size for training.
+
+    scaler_class : Type, optional, default: MinMaxScalerWrapper
+        The class used for scaling input and output data.
 
     callbacks : List[tf.keras.callbacks.Callback], optional, default: [ReduceLROnPlateau, EarlyStopping]
         List of callbacks to monitor and control the training process.
@@ -130,27 +136,29 @@ class NBeats(tf.keras.Model):
 
     Examples
     --------
-    >>> nbeats_instance = NBeats(window_size=10, horizon=3)
+    >>> nbeats_instance = NBeatsWrapper(window_size=10, horizon=3)
     >>> nbeats_instance.build()
     >>> nbeats_instance.compile()
     >>> nbeats_instance.fit(X_train, y_train, X_val, y_val)
     >>> predictions = nbeats_instance.predict(test_data)
     >>> mse = nbeats_model.model.evaluate(test_data)
     """
+
     def __init__(
-        self, 
+        self,
         window_size: int,
         horizon: int = 1,
         n_neurons: int = 512,
-        n_layers: int = 4, 
-        n_stacks: int = 30, 
-        epochs: int = 5000, 
-        batch_size: int = 1024, 
+        n_layers: int = 4,
+        n_stacks: int = 30,
+        epochs: int = 5000,
+        batch_size: int = 1024,
+        scaler_class: Type = MinMaxScalerWrapper(),
         callbacks: List = [
-                tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss", patience=100, verbose=1),
-                create_early_stopping(monitor="val_loss", patience=200, restore_best_weights=True),
-            ],
-        **kwargs: Dict
+            tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss", patience=100, verbose=0),
+            create_early_stopping(monitor="val_loss", patience=200, restore_best_weights=True),
+        ],
+        **kwargs: Dict,
     ) -> None:
         super().__init__(**kwargs)
         self.input_size = window_size * horizon
@@ -164,6 +172,8 @@ class NBeats(tf.keras.Model):
         self.batch_size = batch_size
         self.model_name = f"nbeats_model"
         self.model = None
+        self.scaler_X = scaler_class
+        self.scaler_y = scaler_class
         self.callbacks = callbacks
         self.initial_block = NBeatsBlock(
             input_size=window_size * horizon,
@@ -195,6 +205,11 @@ class NBeats(tf.keras.Model):
         self.model.compile(loss=loss, optimizer=tf.keras.optimizers.legacy.Adam(learning_rate), metrics=metrics)
 
     def fit(self, X_train: np.array, y_train: np.array, X_val: np.array, y_val: np.array, verbose: int = 0) -> None:
+        if self.scaler_X is not None:
+            X_train = self.scaler_X.fit_transform_X(X_train)
+            y_train = self.scaler_y.fit_transform_y(y_train.reshape(len(y_train), 1)).flatten()
+            X_val = self.scaler_X.transform_X(X_val)
+            y_val = self.scaler_y.transform_y(y_val.reshape(len(y_val), 1)).flatten()
         self.model.fit(
             X_train,
             y_train,
@@ -205,6 +220,11 @@ class NBeats(tf.keras.Model):
             callbacks=self.callbacks,
         )
 
-    def predict(self, X_test: np.array) -> np.array:
-        y_pred = self.model.predict(X_test)
+    def predict(self, X_test: np.array) -> None:
+        if self.scaler_X is not None:
+            X_test = self.scaler_X.transform_X(X_test)
+            y_pred = self.model.predict(X_test)
+            y_pred = self.scaler_y.inverse_transform_y(y_pred.reshape(-1, 1))
+        else:
+            y_pred = self.model.predict(X_test)
         return y_pred.flatten()

@@ -1,10 +1,10 @@
 import pandas as pd
-from timepulse.data.data_collection import fetch_holidays, fetch_stringency_index, load_weather
+from timepulse.data.data_collection import fetch_holidays, fetch_stringency_index
 from timepulse.utils.splits import create_multivar_dataframe, create_windowed_dataframe, stratified_split_data
 from tests.v1.mock_data import create_mock_data
 
 
-def multi_data_pipeline(location_name, country_code, place_filter, window_size, target_column, splitter_column):
+def multi_data_pipeline(country_code, place_filter, window_size, target_column, splitter_column):
     df = create_mock_data(start_year=2016, end_year=2022)
     df = df[df["place"] == place_filter]
     df["Date"] = pd.to_datetime(df[["year", "month"]].assign(day=1)) + pd.DateOffset(months=1) - pd.DateOffset(days=1)
@@ -12,13 +12,10 @@ def multi_data_pipeline(location_name, country_code, place_filter, window_size, 
     df.set_index("Date", inplace=True)
     df.index = pd.to_datetime(df.index)
     df = df[["value"]]
-    start_date = df.index.min().strftime("%Y-%m-%d")
-    end_date = df.index.max().strftime("%Y-%m-%d")
     years = df.index.year.unique()
     holidays_df = fetch_holidays(years=years, country_code=country_code)
     stringency_index_df = fetch_stringency_index(country_code)
-    weather_history_df = load_weather("spain")
-    multivar_df = create_multivar_dataframe(df, stringency_index_df, holidays_df, weather_history_df)
+    multivar_df = create_multivar_dataframe(df, stringency_index_df, holidays_df)
     multivar_df = create_windowed_dataframe(base_df=multivar_df, target_column=target_column, window_size=window_size)
 
     X_train, y_train, X_test, y_test = stratified_split_data(
