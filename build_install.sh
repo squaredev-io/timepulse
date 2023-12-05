@@ -1,7 +1,5 @@
 #!/bin/bash
 
-pip install git+https://github.com/stavrostheocharis/weather_data_retriever.git
-
 # Remove the 'dist' and 'build' folders
 rm -rf dist build timepulse.egg-info
 
