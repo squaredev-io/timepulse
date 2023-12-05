@@ -65,7 +65,6 @@ setup(
         "tensorflow==2.15.0",
         "tensorflow-estimator==2.15.0",
         "tensorflow-io-gcs-filesystem==0.34.0",
-        "tensorflow-macos==2.15.0",
         "termcolor==2.3.0",
         "threadpoolctl==3.2.0",
         "tomli==2.0.1",
