@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+          cache: "pip" # caching pip dependencies
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: |
+          make test
+
+  publish:
+    needs:
+      - test
+    uses: squaredev-io/gh-workflows/.github/workflows/base_build_publish.yml@main
+    with:
+      image: timepulse
+      dockerfile: Dockerfile
+    secrets:
+      docker_username: ${{ secrets.DOCKER_USERNAME }}
+      docker_access_token: ${{ secrets.DOCKER_ACCESS_TOKEN }}
