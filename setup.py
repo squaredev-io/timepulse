@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="timepulse",
-    version="0.0.6",
+    version="0.0.1",
     description="A set of tools to help with timeseries flow",
     long_description=long_description,
     long_description_content_type="text/markdown",
