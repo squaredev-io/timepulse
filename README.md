@@ -27,16 +27,19 @@ Witness the seamless integration of temporal mastery into your coding sanctum!
 
 Embark on an odyssey through time as you harness the Timepulse magic. Transform raw time series data into insights that transcend the ordinary. Your code, now a symphony of temporal brilliance!
 
+### How to use timepulse
+#### Import 
 ```{python}
 from timepulse.models.nn import MultivariateDenseWrapper
 from timepulse.utils.models import run_model
+```
+#### Run model 
 
+```{python}
  y_pred, result_metrics = run_model(model_instance, X_train.values, y_train, X_val.values, y_val, verbose=0)
-
-print( y_pred, results_metrics)
-
 ```
 
+#### Results example
 ```
 [ 8287547.5 10593171.  12349981.  13229407.  10743349.   8585146.
   7701900.   6690604.5  6193717.5  5999759.   5651086.5  5573535.5
