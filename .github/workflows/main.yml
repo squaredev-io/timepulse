@@ -25,15 +25,3 @@ jobs:
 
       - name: test
         run: pytest -s
-
-  publish:
-    needs:
-      - test
-    uses: squaredev-io/gh-workflows/.github/workflows/base_build_publish.yml@main
-    with:
-      image: timepulse
-      dockerfile: Dockerfile
-      runs-on: ubuntu-latest
-    secrets:
-      docker_username: ${{ secrets.DOCKER_USERNAME }}
-      docker_access_token: ${{ secrets.DOCKER_ACCESS_TOKEN }}
