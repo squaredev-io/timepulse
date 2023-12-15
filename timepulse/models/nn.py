@@ -5,7 +5,7 @@ from typing import List, Type
 import numpy as np
 
 
-class MultivariateDenseWrapper:
+class MultivariateDense:
     def __init__(
         self,
         horizon: int = 1,

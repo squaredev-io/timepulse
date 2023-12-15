@@ -1,6 +1,6 @@
 import pandas as pd
 import pytest
-from timepulse.models.nbeats import NBeatsWrapper
+from timepulse.models.nbeats import NBeats
 from timepulse.utils.models import run_model, create_early_stopping, create_model_checkpoint
 from tests.v1.conftest import get_order_number
 from tests.utils.pipelines import multi_data_pipeline
@@ -9,14 +9,14 @@ import tensorflow as tf
 
 @pytest.mark.order(get_order_number("test_nbeats"))
 def test_nbeats():
-    X_train, y_train, X_test, y_test = multi_data_pipeline(
+    X_train, X_test, y_train, y_test = multi_data_pipeline(
         country_code="ES", place_filter="a", window_size=3, target_column="value", splitter_column="stringency_category"
     )
 
     assert X_train.shape[0] == y_train.shape[0], "Number of training samples in X_train and y_train do not match"
     assert X_test.shape[0] == y_test.shape[0], "Number of testing samples in X_test and y_test do not match"
 
-    model_instance = NBeatsWrapper(
+    model_instance = NBeats(
         window_size=(len(X_train.columns)),
         horizon=1,
         callbacks=[

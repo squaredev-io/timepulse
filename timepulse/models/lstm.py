@@ -6,7 +6,7 @@ import numpy as np
 from typing import List, Optional, Tuple, Type
 
 
-class LSTMWrapper:
+class LSTM:
     def __init__(
         self,
         input_shape: Tuple,

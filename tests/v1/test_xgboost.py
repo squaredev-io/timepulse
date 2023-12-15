@@ -1,6 +1,6 @@
 import pandas as pd
 import pytest
-from timepulse.models.xgboost import XGBoostRegressorWrapper
+from timepulse.models.xgboost import XGBoostRegressor
 from timepulse.utils.models import run_model
 from timepulse.processing.standard_scaler import StandardScalerWrapper
 from tests.v1.conftest import get_order_number
@@ -10,14 +10,14 @@ from unittest.mock import patch
 
 @pytest.mark.order(get_order_number("test_xgboost"))
 def test_xgboost():
-    X_train, y_train, X_test, y_test = multi_data_pipeline(
+    X_train, X_test, y_train, y_test = multi_data_pipeline(
         country_code="ES", place_filter="b", window_size=3, target_column="value", splitter_column="stringency_category"
     )
 
     assert X_train.shape[0] == y_train.shape[0], "Number of training samples in X_train and y_train do not match"
     assert X_test.shape[0] == y_test.shape[0], "Number of testing samples in X_test and y_test do not match"
 
-    model_instance = XGBoostRegressorWrapper(
+    model_instance = XGBoostRegressor(
         scaler_class=StandardScalerWrapper(),
         n_estimators=1000,
         max_depth=5,
@@ -34,7 +34,7 @@ def test_xgboost():
     ), "Not all expected metrics are present in the results"
     assert all(result_metrics[metric] is not None for metric in expected_metrics), "Some metric values are None"
 
-    default_model_instance = XGBoostRegressorWrapper(scaler_class=None)
+    default_model_instance = XGBoostRegressor(scaler_class=None)
     assert not default_model_instance.params, "The default Constructor is not called"
 
     y_pred, result_metrics = run_model(default_model_instance, X_train, y_train, X_test, y_test, verbose=0)

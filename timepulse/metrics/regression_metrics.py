@@ -30,10 +30,11 @@ def calculate_smape(y_true: np.array, y_pred: np.array) -> float:
     numerator = np.abs(y_pred - y_true)
     denominator = (np.abs(y_pred) + np.abs(y_true)) / 2
     mask = denominator != 0
-    smape = np.mean(200 * np.divide(numerator[mask], denominator[mask]))
-    if np.isnan(smape):
+    if np.any(mask):
+        smape = np.mean(200 * np.divide(numerator[mask], denominator[mask]))
+        return 0.0 if np.isnan(smape) else smape
+    else:
         return 0.0
-    return smape
 
 
 def calculate_mase(y_true: np.array, y_pred: np.array) -> float:
@@ -43,7 +44,7 @@ def calculate_mase(y_true: np.array, y_pred: np.array) -> float:
     if mae_naive_no_season == 0:
         return 0.0
     else:
-        return mae.numpy() / mae_naive_no_season.numpy()
+        return mae.numpy() / (mae_naive_no_season.numpy() + tf.keras.backend.epsilon())
 
 
 def calculate_r2(y_true: np.array, y_pred: np.array) -> float:

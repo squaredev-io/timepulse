@@ -79,7 +79,7 @@ class NBeatsBlock(tf.keras.layers.Layer):
         return backcast, forecast
 
 
-class NBeatsWrapper(tf.keras.Model):
+class NBeats(tf.keras.Model):
     """
     N-Beats Model for time series forecasting.
 
