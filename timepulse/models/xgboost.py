@@ -6,7 +6,7 @@ import os
 from typing import Type, Dict
 
 
-class XGBoostRegressorWrapper:
+class XGBoostRegressor:
     def __init__(self, scaler_class: Type = MinMaxScalerWrapper(), **kwargs: Dict) -> None:
         self.params = kwargs
         self.scaler_X = scaler_class
