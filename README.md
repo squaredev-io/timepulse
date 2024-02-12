@@ -1,5 +1,7 @@
 # 🚀 Timepulse: Unleash the Power of Time Series Processing and Modeling!
 
+[![GitHub][github_badge]][github_link] [![PyPI][pypi_badge]][pypi_link] [![Download][download_badge]][download_link] [![Licence][licence_badge]][licence_link]
+
 Welcome to Timepulse, your ultimate destination for conquering the world of time series data with unprecedented ease and efficiency.
 
 ## Table of Contents 🌟
@@ -63,3 +65,21 @@ from timepulse.utils.models import run_model
 Timepulse was conjured into existence by the brilliant minds at Squaredev. Their dedication to temporal excellence knows no bounds.
 
 Embark on a journey with Timepulse – where time meets brilliance, and magic unfolds! ✨🕰️🚀
+
+
+
+[github_badge]: https://badgen.net/badge/icon/GitHub?icon=github&color=black&label
+
+[github_link]: https://github.com/squaredev-io/timepulse
+
+[pypi_badge]: https://badge.fury.io/py/timepulse.svg
+
+[pypi_link]: https://pypi.org/project/timepulse
+
+[download_badge]: https://badgen.net/pypi/dm/timepulse
+
+[download_link]: https://pypi.org/project/timepulse/#files
+
+[licence_badge]: https://img.shields.io/github/license/squaredev-io/timepulse
+
+[licence_link]: LICENSE
