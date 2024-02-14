@@ -1,6 +1,8 @@
 # 🚀 Timepulse: Unleash the Power of Time Series Processing and Modeling!
 
-[![GitHub][github_badge]][github_link] [![PyPI][pypi_badge]][pypi_link] [![Download][download_badge]][download_link] 
+[![GitHub][github_badge]][github_link] [![PyPI][pypi_badge]][pypi_link] 
+[![Test][test_passing_badge]][test_passing_badge]
+[![Download][download_badge]][download_link] 
 [![Download][total_download_badge]][download_link]
 [![Python Version](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11-green.svg)](#supported-python-versions)
 [![Licence][licence_badge]][licence_link]
@@ -91,3 +93,4 @@ Embark on a journey with Timepulse – where time meets brilliance, and magic un
 
 [licence_link]: LICENSE
 
+[test_passing_badge]: https://github.com/squaredev-io/timepulse/actions/workflows/release-pypi-package.yml/badge.svg
