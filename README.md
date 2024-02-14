@@ -11,14 +11,6 @@
 
 Welcome to Timepulse, your ultimate destination for conquering the world of time series data with unprecedented ease and efficiency.
 
-## Table of Contents 🌟
-
-- [Installation Magic](#installation)
-- [Journey into the Time Dimension](#usage)
-- [Spellbinding Features](#features)
-- [Contribute to the Time Nexus](#contributing)
-- [License](#license)
-- [Credits: Makers of Timepulse](#credits)
 
 ## Installation 🧙‍♂️
 
