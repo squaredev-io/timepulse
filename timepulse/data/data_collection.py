@@ -5,15 +5,16 @@ from typing import Literal, List
 
 
 def fetch_stringency_index(
-    country: Literal["Italy", "Spain"], period: Literal["D", "M"] = "M"
+    country: str, period: Literal["D", "M"] = "M"
 ) -> pd.DataFrame:
     """
     Fetches and processes stringency index data for the specified country and period.
 
     Parameters:
-    - country (Literal["Italy", "Spain"]): The name of the country for which the stringency index data is fetched.
-    - period (Literal["D", "M"], optional): The time period for data resampling, either "D" for daily or "M" for monthly.
-                                             Defaults to "M".
+    - country (str): The name of the country for which the
+    stringency index data is fetched.
+    - period (Literal["D", "M"], optional): The time period for data resampling,
+    either "D" for daily or "M" for monthly. Defaults to "M".
 
     Returns:
     - pd.DataFrame: Processed DataFrame containing the stringency index data with date-wise categories.
@@ -65,14 +66,14 @@ def fetch_stringency_index(
 
 
 def fetch_holidays(
-    years: List, country_code: Literal["IT", "ES"], period: Literal["D", "M"] = "M"
+    years: List[int], country_code: str, period: Literal["D", "M"] = "M"
 ) -> pd.DataFrame:
     """
     Fetches and processes holidays data for the specified country and period.
 
     Parameters:
     - years (List): A list of years for which holidays data is fetched.
-    - country_code (Literal["IT", "ES"]): The country code for the country of interest.
+    - country_code (str): The country code for the country of interest.
     - period (Literal["D", "M"], optional): The time period for data resampling, either "D" for daily or "M" for monthly.
                                              Defaults to "M".
 

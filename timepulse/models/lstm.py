@@ -1,7 +1,6 @@
 from timepulse.utils.models import create_early_stopping
 from timepulse.processing.min_max_scaler import MinMaxScalerWrapper
 import tensorflow as tf
-import pandas as pd
 import numpy as np
 from typing import List, Optional, Tuple, Type
 

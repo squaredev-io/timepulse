@@ -6,7 +6,7 @@ with open("README.md", "r") as f:
 setup(
     name="timepulse",
     version="0.2.0",
-    description="A set of tools to help with timeseries flow",
+    description="A set of algorithms to help with timeseries flow",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="SQUAREDEV BV",
@@ -39,7 +39,7 @@ setup(
         "Programming Language :: Python :: 3.11",
     ],
     python_requires=">=3.9",  # Minimum version requirement of the package
-    keywords="timeseries tools ml flow python machine learning",  # Short descriptors for your package
+    keywords="timeseries algorithms ml flow ai python machine learning",  # Short descriptors for your package
     package_data={},
     entry_points={
         "console_scripts": [
