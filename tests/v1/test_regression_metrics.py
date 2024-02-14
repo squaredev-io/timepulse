@@ -4,6 +4,7 @@ from timepulse.metrics.regression_metrics import evaluate_preds
 import numpy as np
 import tensorflow as tf
 
+
 @pytest.mark.order(get_order_number("test_regression_metrics"))
 def test_regression_metrics():
     y_true = tf.constant([2.0, 3.0, 5.0, 7.0], dtype=tf.float32)

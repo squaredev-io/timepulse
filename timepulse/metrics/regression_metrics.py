@@ -92,4 +92,12 @@ def evaluate_preds(y_true: np.array, y_pred: np.array) -> dict:
     mase = calculate_mase(y_true, y_pred)
     r2 = calculate_r2(y_true, y_pred)
 
-    return {"mae": mae, "mse": mse, "rmse": rmse, "mape": mape, "smape": smape, "mase": mase, "r2_score": r2}
+    return {
+        "mae": mae,
+        "mse": mse,
+        "rmse": rmse,
+        "mape": mape,
+        "smape": smape,
+        "mase": mase,
+        "r2_score": r2,
+    }

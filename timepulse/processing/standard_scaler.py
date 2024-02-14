@@ -1,6 +1,7 @@
 from sklearn.preprocessing import StandardScaler
 import numpy as np
 
+
 class StandardScalerWrapper:
     def __init__(self) -> None:
         self.scaler_X = StandardScaler()
