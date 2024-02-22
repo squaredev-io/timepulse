@@ -7,7 +7,9 @@ from typing import Type, Dict
 
 
 class XGBoostRegressor:
-    def __init__(self, scaler_class: Type = MinMaxScalerWrapper(), **kwargs: Dict) -> None:
+    def __init__(
+        self, scaler_class: Type = MinMaxScalerWrapper(), **kwargs: Dict
+    ) -> None:
         self.params = kwargs
         self.scaler_X = scaler_class
         self.scaler_y = scaler_class
@@ -20,13 +22,27 @@ class XGBoostRegressor:
         else:
             self.model = XGBRegressor(**self.params)
 
-    def fit(self, X_train: np.array, y_train: np.array, X_val: np.array, y_val: np.array, verbose: int = 0) -> None:
+    def fit(
+        self,
+        X_train: np.array,
+        y_train: np.array,
+        X_val: np.array,
+        y_val: np.array,
+        verbose: int = 0,
+    ) -> None:
         if self.scaler_X is not None:
             X_train = self.scaler_X.fit_transform_X(X_train)
-            y_train = self.scaler_y.fit_transform_y(y_train.reshape(len(y_train), 1)).flatten()
+            y_train = self.scaler_y.fit_transform_y(
+                y_train.reshape(len(y_train), 1)
+            ).flatten()
             X_val = self.scaler_X.transform_X(X_val)
             y_val = self.scaler_y.transform_y(y_val.reshape(len(y_val), 1)).flatten()
-        self.model.fit(X_train, y_train, eval_set=[(X_train, y_train), (X_val, y_val)], verbose=verbose)
+        self.model.fit(
+            X_train,
+            y_train,
+            eval_set=[(X_train, y_train), (X_val, y_val)],
+            verbose=verbose,
+        )
 
     def predict(self, X_test: np.array) -> None:
         if self.scaler_X is not None:

@@ -5,7 +5,9 @@ from typing import Tuple, Dict, Type
 from timepulse.metrics.regression_metrics import evaluate_preds
 
 
-def create_model_checkpoint(model_name: str, save_path: str = "storage") -> tf.keras.callbacks.ModelCheckpoint:
+def create_model_checkpoint(
+    model_name: str, save_path: str = "storage"
+) -> tf.keras.callbacks.ModelCheckpoint:
     """
     Creates a ModelCheckpoint callback for saving the best model during training.
 
@@ -57,7 +59,12 @@ def create_early_stopping(
 
 
 def run_model(
-    model_instance: Type, X_train: np.array, y_train: np.array, X_test: np.array, y_test: np.array, verbose=0
+    model_instance: Type,
+    X_train: np.array,
+    y_train: np.array,
+    X_test: np.array,
+    y_test: np.array,
+    verbose=0,
 ) -> Tuple[np.array, Dict]:
     """
     Train and evaluate a Keras model.

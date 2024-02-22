@@ -1,17 +1,16 @@
 # 🚀 Timepulse: Unleash the Power of Time Series Processing and Modeling!
 
-[![GitHub][github_badge]][github_link] [![PyPI][pypi_badge]][pypi_link] [![Download][download_badge]][download_link] [![Licence][licence_badge]][licence_link]
+[![GitHub][github_badge]][github_link] [![PyPI][pypi_badge]][pypi_link] 
+[![Test][test_passing_badge]][test_passing_badge]
+[![Download][download_badge]][download_link] 
+[![Download][total_download_badge]][download_link]
+[![Python Version](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11-green.svg)](#supported-python-versions)
+[![Licence][licence_badge]][licence_link]
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) 
+
 
 Welcome to Timepulse, your ultimate destination for conquering the world of time series data with unprecedented ease and efficiency.
 
-## Table of Contents 🌟
-
-- [Installation Magic](#installation)
-- [Journey into the Time Dimension](#usage)
-- [Spellbinding Features](#features)
-- [Contribute to the Time Nexus](#contributing)
-- [License](#license)
-- [Credits: Makers of Timepulse](#credits)
 
 ## Installation 🧙‍♂️
 
@@ -78,8 +77,12 @@ Embark on a journey with Timepulse – where time meets brilliance, and magic un
 
 [download_badge]: https://badgen.net/pypi/dm/timepulse
 
+[total_download_badge]: https://static.pepy.tech/personalized-badge/timepulse?period=total&units=international_system&left_color=grey&right_color=green&left_text=Total%20Downloads
+
 [download_link]: https://pypi.org/project/timepulse/#files
 
 [licence_badge]: https://img.shields.io/github/license/squaredev-io/timepulse
 
 [licence_link]: LICENSE
+
+[test_passing_badge]: https://github.com/squaredev-io/timepulse/actions/workflows/release-pypi-package.yml/badge.svg

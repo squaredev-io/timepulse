@@ -54,8 +54,12 @@ class NBeatsBlock(tf.keras.layers.Layer):
         self.horizon = horizon
         self.n_neurons = n_neurons
         self.n_layers = n_layers
-        self.hidden = [tf.keras.layers.Dense(n_neurons, activation="relu") for _ in range(n_layers)]
-        self.theta_layer = tf.keras.layers.Dense(theta_size, activation="linear", name="theta")
+        self.hidden = [
+            tf.keras.layers.Dense(n_neurons, activation="relu") for _ in range(n_layers)
+        ]
+        self.theta_layer = tf.keras.layers.Dense(
+            theta_size, activation="linear", name="theta"
+        )
 
     def call(self, inputs: np.array) -> Tuple[np.array, np.array]:
         """
@@ -155,8 +159,12 @@ class NBeats(tf.keras.Model):
         batch_size: int = 1024,
         scaler_class: Type = MinMaxScalerWrapper(),
         callbacks: List = [
-            tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss", patience=100, verbose=0),
-            create_early_stopping(monitor="val_loss", patience=200, restore_best_weights=True),
+            tf.keras.callbacks.ReduceLROnPlateau(
+                monitor="val_loss", patience=100, verbose=0
+            ),
+            create_early_stopping(
+                monitor="val_loss", patience=200, restore_best_weights=True
+            ),
         ],
         **kwargs: Dict,
     ) -> None:
@@ -187,7 +195,9 @@ class NBeats(tf.keras.Model):
     def build(self) -> None:
         stack_input = tf.keras.layers.Input(shape=(self.input_size), name="stack_input")
         backcast, forecast = self.initial_block(stack_input)
-        residuals = tf.keras.layers.subtract([stack_input, backcast], name="subtract_00")
+        residuals = tf.keras.layers.subtract(
+            [stack_input, backcast], name="subtract_00"
+        )
         for i in range(self.n_stacks - 1):
             backcast, block_forecast = NBeatsBlock(
                 input_size=self.input_size,
@@ -197,17 +207,39 @@ class NBeats(tf.keras.Model):
                 n_layers=self.n_layers,
                 name=f"NBeatsBlock_{i}",
             )(residuals)
-            residuals = tf.keras.layers.subtract([residuals, backcast], name=f"subtract_{i}")
+            residuals = tf.keras.layers.subtract(
+                [residuals, backcast], name=f"subtract_{i}"
+            )
             forecast = tf.keras.layers.add([forecast, block_forecast], name=f"add_{i}")
-        self.model = tf.keras.Model(inputs=stack_input, outputs=forecast, name=self.model_name)
+        self.model = tf.keras.Model(
+            inputs=stack_input, outputs=forecast, name=self.model_name
+        )
 
-    def compile(self, loss: str = "mae", learning_rate: float = 0.001, metrics: List = ["mae", "mse"]) -> None:
-        self.model.compile(loss=loss, optimizer=tf.keras.optimizers.legacy.Adam(learning_rate), metrics=metrics)
+    def compile(
+        self,
+        loss: str = "mae",
+        learning_rate: float = 0.001,
+        metrics: List = ["mae", "mse"],
+    ) -> None:
+        self.model.compile(
+            loss=loss,
+            optimizer=tf.keras.optimizers.legacy.Adam(learning_rate),
+            metrics=metrics,
+        )
 
-    def fit(self, X_train: np.array, y_train: np.array, X_val: np.array, y_val: np.array, verbose: int = 0) -> None:
+    def fit(
+        self,
+        X_train: np.array,
+        y_train: np.array,
+        X_val: np.array,
+        y_val: np.array,
+        verbose: int = 0,
+    ) -> None:
         if self.scaler_X is not None:
             X_train = self.scaler_X.fit_transform_X(X_train)
-            y_train = self.scaler_y.fit_transform_y(y_train.reshape(len(y_train), 1)).flatten()
+            y_train = self.scaler_y.fit_transform_y(
+                y_train.reshape(len(y_train), 1)
+            ).flatten()
             X_val = self.scaler_X.transform_X(X_val)
             y_val = self.scaler_y.transform_y(y_val.reshape(len(y_val), 1)).flatten()
         self.model.fit(

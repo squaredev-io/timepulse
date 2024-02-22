@@ -1,7 +1,6 @@
 from timepulse.utils.models import create_early_stopping
 from timepulse.processing.min_max_scaler import MinMaxScalerWrapper
 import tensorflow as tf
-import pandas as pd
 import numpy as np
 from typing import List, Optional, Tuple, Type
 
@@ -39,13 +38,27 @@ class LSTM:
             ]
         )
 
-    def compile(self, loss: str = "mean_squared_error", learning_rate: float = 0.001) -> None:
-        self.model.compile(loss=loss, optimizer=tf.keras.optimizers.legacy.Adam(learning_rate=learning_rate))
+    def compile(
+        self, loss: str = "mean_squared_error", learning_rate: float = 0.001
+    ) -> None:
+        self.model.compile(
+            loss=loss,
+            optimizer=tf.keras.optimizers.legacy.Adam(learning_rate=learning_rate),
+        )
 
-    def fit(self, X_train: np.array, y_train: np.array, X_val: np.array, y_val: np.array, verbose: int = 0) -> None:
+    def fit(
+        self,
+        X_train: np.array,
+        y_train: np.array,
+        X_val: np.array,
+        y_val: np.array,
+        verbose: int = 0,
+    ) -> None:
         if self.scaler_X is not None:
             X_train = self.scaler_X.fit_transform_X(X_train)
-            y_train = self.scaler_y.fit_transform_y(y_train.reshape(len(y_train), 1)).flatten()
+            y_train = self.scaler_y.fit_transform_y(
+                y_train.reshape(len(y_train), 1)
+            ).flatten()
             X_val = self.scaler_X.transform_X(X_val)
             y_val = self.scaler_y.transform_y(y_val.reshape(len(y_val), 1)).flatten()
         X_train_reshaped = np.reshape(X_train, (X_train.shape[0], 1, X_train.shape[1]))

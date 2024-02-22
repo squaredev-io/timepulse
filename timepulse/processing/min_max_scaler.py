@@ -1,6 +1,7 @@
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 
+
 class MinMaxScalerWrapper:
     def __init__(self) -> None:
         self.scaler_X = MinMaxScaler()

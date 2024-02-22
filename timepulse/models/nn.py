@@ -38,12 +38,23 @@ class MultivariateDense:
         self.model = tf.keras.Sequential(layers, name=self.model_name)
 
     def compile(self, loss: str = "mae", learning_rate: float = 0.001) -> None:
-        self.model.compile(loss=loss, optimizer=tf.keras.optimizers.legacy.Adam(learning_rate))
+        self.model.compile(
+            loss=loss, optimizer=tf.keras.optimizers.legacy.Adam(learning_rate)
+        )
 
-    def fit(self, X_train: np.array, y_train: np.array, X_val: np.array, y_val: np.array, verbose: int = 0) -> None:
+    def fit(
+        self,
+        X_train: np.array,
+        y_train: np.array,
+        X_val: np.array,
+        y_val: np.array,
+        verbose: int = 0,
+    ) -> None:
         if self.scaler_X is not None:
             X_train = self.scaler_X.fit_transform_X(X_train)
-            y_train = self.scaler_y.fit_transform_y(y_train.reshape(len(y_train), 1)).flatten()
+            y_train = self.scaler_y.fit_transform_y(
+                y_train.reshape(len(y_train), 1)
+            ).flatten()
             X_val = self.scaler_X.transform_X(X_val)
             y_val = self.scaler_y.transform_y(y_val.reshape(len(y_val), 1)).flatten()
         self.model.fit(

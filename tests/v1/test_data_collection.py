@@ -9,7 +9,11 @@ def test_data_collection():
     holidays_df = fetch_holidays(years=[2020, 2021, 2022, 2023], country_code="ES")
 
     assert not stringency_index_df.empty, "The covid DataFrame is empty"
-    assert stringency_index_df.index.name == "Date", "The index name is not set to 'Date' in covid DataFrame"
+    assert (
+        stringency_index_df.index.name == "Date"
+    ), "The index name is not set to 'Date' in covid DataFrame"
 
     assert not holidays_df.empty, "The holidays DataFrame is empty"
-    assert holidays_df.index.name == "Date", "The index name is not set to 'Date' in holidays DataFrame"
+    assert (
+        holidays_df.index.name == "Date"
+    ), "The index name is not set to 'Date' in holidays DataFrame"

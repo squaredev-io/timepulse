@@ -14,13 +14,19 @@ def test_lstm():
         target_column="value",
         splitter_column="stringency_category",
     )
-    lstm = LSTM(horizon=1, n_neurons=64, dropout_rate=0.2, input_shape=(1, X_train.shape[1]))
+    lstm = LSTM(
+        horizon=1, n_neurons=64, dropout_rate=0.2, input_shape=(1, X_train.shape[1])
+    )
 
-    y_pred, result_metrics = run_model(lstm, X_train, y_train, X_test, y_test, verbose=1)
+    y_pred, result_metrics = run_model(
+        lstm, X_train, y_train, X_test, y_test, verbose=1
+    )
     assert y_pred.shape == y_test.shape, "Shape mismatch between y_pred and y_test"
 
     expected_metrics = ["r2_score", "mae", "mse", "rmse", "mape", "smape", "mase"]
     assert all(
         metric in result_metrics for metric in expected_metrics
     ), "Not all expected metrics are present in the results"
-    assert all(result_metrics[metric] is not None for metric in expected_metrics), "Some metric values are None"
+    assert all(
+        result_metrics[metric] is not None for metric in expected_metrics
+    ), "Some metric values are None"
