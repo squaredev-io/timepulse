@@ -5,7 +5,7 @@ from typing import Union, Tuple
 
 
 def create_multivar_dataframe(
-    base_df: pd.DataFrame, *additional_dfs: pd.DataFrame
+    base_df: pd.DataFrame, *additional_dfs: pd.DataFrame, interval: str = "M"
 ) -> pd.DataFrame:
     """
     Create a multivariate DataFrame by merging a base DataFrame with additional DataFrames based on a date range.
@@ -25,7 +25,7 @@ def create_multivar_dataframe(
     max_date = base_df.index.max()
 
     # Create a monthly date range with the last day of each month
-    date_range = pd.date_range(start=min_date, end=max_date, freq="M")
+    date_range = pd.date_range(start=min_date, end=max_date, freq=interval)
 
     # Create a DataFrame with the date range to ensure complete coverage
     complete_date_range_df = pd.DataFrame({"Date": date_range})
@@ -37,22 +37,16 @@ def create_multivar_dataframe(
     # Merge additional DataFrames based on the date range
     for additional_df in additional_dfs:
         # Merge with the complete date range DataFrame to ensure all dates are included
-        merged_df = pd.merge(
-            complete_date_range_df, additional_df, on="Date", how="left"
-        )
+        merged_df = pd.merge(complete_date_range_df, additional_df, left_index=True, right_index=True, how="left")
         # Fill missing values with 0 and convert to integer
         merged_df = merged_df.fillna(0).astype(int)
         # Perform the merge with the multivariate DataFrame
-        multivar_df = pd.merge(
-            multivar_df, merged_df, left_index=True, right_index=True, how="left"
-        )
+        multivar_df = pd.merge(multivar_df, merged_df, left_index=True, right_index=True, how="left")
 
     return multivar_df
 
 
-def create_windowed_dataframe(
-    base_df: pd.DataFrame, target_column: str, window_size: int = 3
-) -> pd.DataFrame:
+def create_windowed_dataframe(base_df: pd.DataFrame, target_column: str, window_size: int = 3) -> pd.DataFrame:
     """
     Create a windowed DataFrame by shifting values of a specified column.
 
@@ -73,9 +67,7 @@ def create_windowed_dataframe(
     # Add windowed columns
     for i in range(window_size):
         # Use loc to modify the copied DataFrame
-        windowed_df[f"{target_column}-{i+1}"] = windowed_df[target_column].shift(
-            periods=i + 1
-        )
+        windowed_df[f"{target_column}-{i+1}"] = windowed_df[target_column].shift(periods=i + 1)
 
     # Drop rows with NaN values
     windowed_df = windowed_df.dropna()
@@ -93,9 +85,7 @@ def get_labelled_windows(x: np.array, horizon: int = 1) -> Tuple[np.array, np.ar
     return x[:, :-horizon], x[:, -horizon:]
 
 
-def make_windows(
-    x: np.array, window_size: int = 7, horizon: int = 1
-) -> Tuple[np.array, np.array]:
+def make_windows(x: np.array, window_size: int = 7, horizon: int = 1) -> Tuple[np.array, np.array]:
     """
     Create function to view NumPy arrays as windows.
     Turns a 1D array into a 2D array of sequential windows of window_size.
@@ -104,10 +94,7 @@ def make_windows(
     window_step = np.expand_dims(np.arange(window_size + horizon), axis=0)
 
     # 2. Create a 2D array of multiple window steps (minus 1 to account for 0 indexing)
-    window_indexes = (
-        window_step
-        + np.expand_dims(np.arange(len(x) - (window_size + horizon - 1)), axis=0).T
-    )
+    window_indexes = window_step + np.expand_dims(np.arange(len(x) - (window_size + horizon - 1)), axis=0).T
 
     # 3. Index on the target array (time series) with 2D array of multiple window steps
     windowed_array = x[window_indexes]
@@ -118,9 +105,7 @@ def make_windows(
     return windows, labels
 
 
-def make_train_test_splits(
-    windows: np.array, labels: np.array, test_split: float = 0.1
-):
+def make_train_test_splits(windows: np.array, labels: np.array, test_split: float = 0.1):
     """
     Splits matching pairs of windows and labels into train and test splits.
     """
@@ -138,8 +123,6 @@ def make_window_splits(values: np.array, size: int = 10, horizon: int = 1):
     """
     full_windows, full_labels = make_windows(values, window_size=size, horizon=horizon)
 
-    train_windows, test_windows, train_labels, test_labels = make_train_test_splits(
-        full_windows, full_labels
-    )
+    train_windows, test_windows, train_labels, test_labels = make_train_test_splits(full_windows, full_labels)
 
     return train_windows, test_windows, train_labels, test_labels
